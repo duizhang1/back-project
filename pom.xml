@@ -16,6 +16,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <nn-common.version>1.0-SNAPSHOT</nn-common.version>
         <spring-boot.version>2.5.5</spring-boot.version>
         <pagehelper-starter.version>1.3.0</pagehelper-starter.version>
         <mysql-connector.version>8.0.27</mysql-connector.version>
@@ -27,25 +28,28 @@
         <swagger2.version>2.9.2</swagger2.version>
         <swagger-models.version>1.6.6</swagger-models.version>
         <swagger-annotations.version>1.6.0</swagger-annotations.version>
+        <mybatisplus.version>3.5.3.1</mybatisplus.version>
+        <spring-security-core.version>6.0.1</spring-security-core.version>
     </properties>
 
 
-<!--    顶级包管理-->
+    <!--顶级包管理-->
     <dependencyManagement>
         <dependencies>
+            <!--项目自身的包-->
+            <dependency>
+                <groupId>com.zhf</groupId>
+                <artifactId>nn-common</artifactId>
+                <version>${nn-common.version}</version>
+            </dependency>
+
+            <!--springboot的依赖-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-
-            <!--MyBatis分页插件starter-->
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>${pagehelper-starter.version}</version>
             </dependency>
 
             <!--mysql-->
@@ -113,6 +117,21 @@
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger-annotations.version}</version>
             </dependency>
+
+            <!--mybatisplus依赖-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatisplus.version}</version>
+            </dependency>
+
+            <!--springsecurity核心jar包-->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring-security-core.version}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>
