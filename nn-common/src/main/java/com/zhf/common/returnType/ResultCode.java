@@ -19,7 +19,7 @@ public enum ResultCode implements IErrorCode{
     /**
      * 未登陆或者登陆过期
      */
-    UNAUTHORIZED("401", "暂未登录或登陆已经过期"),
+    UNAUTHORIZED("401", "暂未登录或token已经过期"),
     /**
      * 没有权限
      */
