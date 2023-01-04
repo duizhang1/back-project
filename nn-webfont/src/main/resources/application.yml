@@ -6,6 +6,12 @@ spring:
     active: dev  # 开发模式
   application:
     name: nn-webfont
+  mail:
+    host: smtp.163.com
+    username: duizhang627@163.com
+    password: FTCXIEVFUMEGRLUS
+    test-connection: true
+
 
 jwt:
   tokenHeader: Authorization #JWT存储的请求头

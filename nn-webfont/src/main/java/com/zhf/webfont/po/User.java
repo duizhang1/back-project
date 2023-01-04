@@ -20,11 +20,9 @@ public class User {
     @TableId(type = IdType.ASSIGN_UUID)
     private String uuid;
 
-    private String account;
+    private String username;
 
     private String password;
-
-    private String username;
 
     private String emailAddress;
 

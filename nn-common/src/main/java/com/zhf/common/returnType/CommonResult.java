@@ -47,6 +47,16 @@ public class CommonResult<T> {
     }
 
     /**
+     * 成功返回自定义的message
+     * @param message
+     * @param <T>
+     * @return
+     */
+    public static <T> CommonResult<T> successWithMsg(String message) {
+        return new CommonResult<T>(ResultCode.SUCCESS.getCode(), message, null);
+    }
+
+    /**
      * 失败返回结果
      * @param errorCode 错误码
      */

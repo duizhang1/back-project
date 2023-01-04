@@ -5,11 +5,12 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.Digester;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zhf.common.exception.Asserts;
+import com.zhf.common.returnType.CommonResult;
 import com.zhf.webfont.bo.UserLoginParam;
+import com.zhf.webfont.bo.UserRegisterParam;
 import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.User;
 import com.zhf.webfont.service.UserService;
-import com.zhf.webfont.util.DigesterUtil;
 import com.zhf.webfont.util.JwtTokenUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,13 +36,18 @@ public class UserServiceImpl implements UserService {
     public String login(UserLoginParam userLoginParam) {
         checkUserLoginParam(userLoginParam);
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        wrapper.eq("account",userLoginParam.getUsername());
+        wrapper.eq("username",userLoginParam.getUsername());
         List<User> users = userMapper.selectList(wrapper);
         Asserts.failIsTrue(CollUtil.isEmpty(users),"账号或者密码错误");
         User user = users.get(0);
         String password = user.getPassword();
         Asserts.failIsTrue(!passwordEncoder.matches(userLoginParam.getPassword(), password),"账号或者密码错误");
         return jwtTokenUtil.generateToken(userLoginParam);
+    }
+
+    @Override
+    public void register(UserRegisterParam userRegisterParam) {
+
     }
 
     private void checkUserLoginParam(UserLoginParam userLoginParam) {

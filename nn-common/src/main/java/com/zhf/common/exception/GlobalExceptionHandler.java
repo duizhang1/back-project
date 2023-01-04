@@ -1,9 +1,6 @@
 package com.zhf.common.exception;
 
 import com.zhf.common.returnType.CommonResult;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,8 +23,8 @@ public class GlobalExceptionHandler {
         return CommonResult.failed(e.getMessage());
     }
 
-    @ExceptionHandler(value = RuntimeException.class)
-    public CommonResult handlerBindException(BindException e){
+    @ExceptionHandler(value = Exception.class)
+    public CommonResult handlerException(Exception e){
         return CommonResult.failed("出现异常，请联系管理员");
     }
 }

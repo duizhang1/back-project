@@ -75,7 +75,7 @@ public class CheckLoginInterceptor implements AsyncHandlerInterceptor {
             }
             // 查询用户姓名是否有相关账号
             QueryWrapper<User> wrapper = new QueryWrapper<>();
-            wrapper.eq("account",username);
+            wrapper.eq("username",username);
             List<User> users = userMapper.selectList(wrapper);
             // 如果不存在就直接返回错误
             if (CollUtil.isEmpty(users) || users.size() > 1){
