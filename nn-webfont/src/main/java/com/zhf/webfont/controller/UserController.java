@@ -8,9 +8,7 @@ import com.zhf.webfont.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -22,6 +20,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("user")
+@Api(value = "用户操作")
 public class UserController {
 
     @Value("${jwt.tokenHeader}")
@@ -30,11 +29,9 @@ public class UserController {
     private String tokenHead;
     @Resource
     private UserService userService;
-    @Resource
-    private MailService mailService;
 
     @ApiOperation("登陆接口返回token")
-    @RequestMapping("login")
+    @PostMapping("login")
     public CommonResult login(@RequestBody UserLoginParam userLoginParam){
         String token = userService.login(userLoginParam);
         Map<String,String> tokenMap = new HashMap<>(2);
@@ -44,16 +41,10 @@ public class UserController {
     }
 
     @ApiOperation("注册账号")
-    @RequestMapping("register")
+    @PostMapping("register")
     public CommonResult register(@RequestBody UserRegisterParam userRegisterParam){
         userService.register(userRegisterParam);
         return CommonResult.successWithMsg("注册成功");
     }
 
-    @ApiOperation("获得邮箱验证码")
-    @RequestMapping("getVerifyCode")
-    public CommonResult getVerifyCode(String emailAddress){
-        mailService.sendVerifyCode(emailAddress);
-        return CommonResult.successWithMsg("成功发送验证码，请前往邮箱查收");
-    }
 }

@@ -3,12 +3,14 @@ package com.zhf.webfont.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @Author 10276
  * @Date 2023/1/4 17:37
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class UserRegisterParam {
 
