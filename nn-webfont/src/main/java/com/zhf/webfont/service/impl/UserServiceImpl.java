@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     public String login(UserLoginParam userLoginParam) {
         checkUserLoginParam(userLoginParam);
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        wrapper.eq("username",userLoginParam.getUsername());
+        wrapper.eq("email_address",userLoginParam.getAccount());
         List<User> users = userMapper.selectList(wrapper);
         Asserts.failIsTrue(CollUtil.isEmpty(users),"账号或者密码错误");
         User user = users.get(0);
@@ -88,8 +88,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkUserLoginParam(UserLoginParam userLoginParam) {
-        String username = userLoginParam.getUsername();
-        Asserts.failIsTrue(StrUtil.isEmpty(username),"请输入账号");
+        String username = userLoginParam.getAccount();
+        Asserts.failIsTrue(StrUtil.isEmpty(username),"请输入邮箱账号");
 
         String inputPassword = userLoginParam.getPassword();
         Asserts.failIsTrue(StrUtil.isEmpty(inputPassword),"请输入密码");

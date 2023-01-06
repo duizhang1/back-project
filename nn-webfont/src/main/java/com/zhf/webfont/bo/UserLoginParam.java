@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserLoginParam {
 
-    @ApiModelProperty(value = "用户名",required = true)
-    private String username;
+    @ApiModelProperty(value = "邮箱账号",required = true)
+    private String account;
 
     @ApiModelProperty(value = "密码",required = true)
     private String password;
