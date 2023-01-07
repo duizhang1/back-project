@@ -1,12 +1,16 @@
 package com.zhf.webfont.config;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhf.common.exception.Asserts;
 import com.zhf.common.returnType.CommonResult;
 import com.zhf.common.returnType.ResultCode;
+import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.User;
+import com.zhf.webfont.service.UserService;
 import com.zhf.webfont.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +40,7 @@ public class CheckLoginInterceptor implements AsyncHandlerInterceptor {
     @Value("${jwt.tokenHead}")
     private String tokenHead;
     @Resource
-    private UserMapper userMapper;
+    private UserService userService;
     /**
      * 在请求执行前校验是否执行器方法上是否有需要校验的注解
      * 有NeedLogin注解的话，校验请求的header中token是否包含注册信息
@@ -59,26 +63,19 @@ public class CheckLoginInterceptor implements AsyncHandlerInterceptor {
                 return true;
             }
             //该方法需要校验是否登录
-            // 请求头中的token信息
-            String authHeader = request.getHeader(tokenHeader);
-            if (authHeader == null || !authHeader.startsWith(this.tokenHead)) {
-                setResponseMsg(response);
-                return false;
-            }
-            // 去除token头部的bearer
-            String authToken = authHeader.substring(this.tokenHead.length());
-            //获取用户信息
-            String username = jwtTokenUtil.getUserNameFromToken(authToken);
-            if (username == null){
+            String account = jwtTokenUtil.getAccountFromHeader();
+            if (account == null){
                 setResponseMsg(response);
                 return false;
             }
             // 查询用户姓名是否有相关账号
-            QueryWrapper<User> wrapper = new QueryWrapper<>();
-            wrapper.eq("username",username);
-            List<User> users = userMapper.selectList(wrapper);
+            User user = userService.getUserFromEmailAddress(account);
             // 如果不存在就直接返回错误
-            if (CollUtil.isEmpty(users) || users.size() > 1){
+            if (user == null){
+                setResponseMsg(response);
+                return false;
+            }
+            if (!jwtTokenUtil.isTokenExpired()){
                 setResponseMsg(response);
                 return false;
             }
