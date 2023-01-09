@@ -194,4 +194,9 @@ public class RedisServiceImpl implements RedisService {
     public Long lRemove(String key, long count, Object value) {
         return redisTemplate.opsForList().remove(key, count, value);
     }
+
+    @Override
+    public Boolean setEx(String key, Object value) {
+        return redisTemplate.opsForValue().setIfPresent(key,value);
+    }
 }

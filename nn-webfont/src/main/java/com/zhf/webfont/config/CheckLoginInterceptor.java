@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhf.common.exception.Asserts;
 import com.zhf.common.returnType.CommonResult;
 import com.zhf.common.returnType.ResultCode;
+import com.zhf.common.util.ThreadLocalUtil;
 import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.User;
@@ -41,6 +42,8 @@ public class CheckLoginInterceptor implements AsyncHandlerInterceptor {
     private String tokenHead;
     @Resource
     private UserService userService;
+    @Resource
+    private ThreadLocalUtil threadLocalUtil;
     /**
      * 在请求执行前校验是否执行器方法上是否有需要校验的注解
      * 有NeedLogin注解的话，校验请求的header中token是否包含注册信息
@@ -75,6 +78,7 @@ public class CheckLoginInterceptor implements AsyncHandlerInterceptor {
                 setResponseMsg(response);
                 return false;
             }
+            threadLocalUtil.set(ThreadLocalUtil.CURRENT_USER,user);
             if (!jwtTokenUtil.isTokenExpired()){
                 setResponseMsg(response);
                 return false;

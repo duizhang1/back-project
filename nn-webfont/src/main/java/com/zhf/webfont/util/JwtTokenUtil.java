@@ -2,8 +2,11 @@ package com.zhf.webfont.util;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.zhf.common.util.RequestUtil;
+import com.zhf.common.util.ThreadLocalUtil;
 import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.po.User;
+import com.zhf.webfont.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +44,41 @@ public class JwtTokenUtil {
     private Long expiration;
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+    @Value("${jwt.tokenHeader}")
+    private String tokenHeader;
+    @Resource
+    private UserService userService;
+    @Resource
+    private ThreadLocalUtil threadLocalUtil;
+
+
+    public String getTokenFromHeader(){
+        HttpServletRequest currentRequest = RequestUtil.getCurrentRequest();
+        String authHeader = currentRequest.getHeader(tokenHeader);
+        if (StrUtil.isEmpty(authHeader) || authHeader.length() <= tokenHead.length()){
+            return null;
+        }
+        return authHeader.substring(tokenHead.length());
+    }
+
+    public String getAccountFromHeader(){
+        HttpServletRequest currentRequest = RequestUtil.getCurrentRequest();
+        String authHeader = currentRequest.getHeader(tokenHeader);
+        if (StrUtil.isEmpty(authHeader) || authHeader.length() <= tokenHead.length()){
+            return null;
+        }
+        String authToken = authHeader.substring(tokenHead.length());
+        return getAccountFromToken(authToken);
+    }
+
+    public User getCurrentUserFromHeader(){
+        if (threadLocalUtil.get(ThreadLocalUtil.CURRENT_USER) == null){
+            String accountFromHeader = getAccountFromHeader();
+            User user = userService.getUserFromEmailAddress(accountFromHeader);
+            threadLocalUtil.set(ThreadLocalUtil.CURRENT_USER,user);
+        }
+        return (User) threadLocalUtil.get(ThreadLocalUtil.CURRENT_USER);
+    }
 
     /**
      * 根据负责生成JWT的token
@@ -77,32 +117,32 @@ public class JwtTokenUtil {
     /**
      * 从token中获取登录用户名
      */
-    public String getUserNameFromToken(String token) {
-        String username;
+    public String getAccountFromToken(String token) {
+        String account;
         try {
             Claims claims = getClaimsFromToken(token);
-            username = claims.getSubject();
+            account = claims.getSubject();
         } catch (Exception e) {
-            username = null;
+            account = null;
         }
-        return username;
+        return account;
     }
 
     /**
-     * 验证token是否还有效
-     *
-     * @param token       客户端传入的token
-     * @param userLoginParam 从数据库中查询出来的用户信息
+     * 判断请求中的token是否已经失效
      */
-    public boolean validateToken(String token, UserLoginParam userLoginParam) {
-        String username = getUserNameFromToken(token);
-        return username.equals(userLoginParam.getUsername()) && !isTokenExpired(token);
+    public boolean isTokenExpired() {
+        String token = getTokenFromHeader();
+        Date expiredDate = getExpiredDateFromToken(token);
+        return expiredDate.before(new Date());
     }
 
     /**
      * 判断token是否已经失效
+     * @param token
+     * @return
      */
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         Date expiredDate = getExpiredDateFromToken(token);
         return expiredDate.before(new Date());
     }
@@ -118,9 +158,9 @@ public class JwtTokenUtil {
     /**
      * 根据用户信息生成token
      */
-    public String generateToken(UserLoginParam userLoginParam) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userLoginParam.getUsername());
+    public String generateToken(String account) {
+        Map<String, Object> claims = new HashMap<>(2);
+        claims.put(CLAIM_KEY_USERNAME, account);
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims);
     }
@@ -166,9 +206,6 @@ public class JwtTokenUtil {
         Date created = claims.get(CLAIM_KEY_CREATED, Date.class);
         Date refreshDate = new Date();
         //刷新时间在创建时间的指定时间内
-        if(refreshDate.after(created)&&refreshDate.before(DateUtil.offsetSecond(created,time))){
-            return true;
-        }
-        return false;
+        return refreshDate.after(created) && refreshDate.before(DateUtil.offsetSecond(created, time));
     }
 }

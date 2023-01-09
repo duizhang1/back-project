@@ -179,4 +179,12 @@ public interface RedisService {
      * 从List结构中移除属性
      */
     Long lRemove(String key, long count, Object value);
+
+    /**
+     * set如果存在的话
+     * @param key
+     * @param value
+     * @return
+     */
+    Boolean setEx(String key,Object value);
 }

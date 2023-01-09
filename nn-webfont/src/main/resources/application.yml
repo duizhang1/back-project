@@ -23,5 +23,9 @@ redis:
   database: webfont
   key:
     emailVerifyCode: 'email:verifyCode'
+    articleReadCount: 'article:readCount'
+    articleLikeRecord: 'article:likeRecord'
+    articleLikeNumber: 'article:likeNumber'
+    articleStoreNumber: 'article:storeNumber'
   expire:
     fiveMin: 300 # 5分钟

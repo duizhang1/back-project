@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhf.webfont.mapper.StoreListUserRealationMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhf.webfont.po.StoreListUserRealation">
+            <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
+            <result property="sortListId" column="sort_list_id" jdbcType="VARCHAR"/>
+            <result property="articleId" column="article_id" jdbcType="VARCHAR"/>
+            <result property="storeTime" column="store_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        uuid,sort_list_id,article_id,
+        store_time
+    </sql>
+</mapper>
