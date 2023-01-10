@@ -35,7 +35,7 @@ public class ArticleCacheServiceImpl implements ArticleCacheService {
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private JwtTokenUtil jwtTokenUtil;
-    @Value("${redis.key.database}")
+    @Value("${redis.database}")
     private String DATABASE;
     @Value("${redis.key.articleReadCount}")
     private String ARTICLE_READ_COUNT;
