@@ -2,6 +2,7 @@ package com.zhf.webfont.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,9 +18,17 @@ public class InterceptorConfig implements WebMvcConfigurer {
         return new CheckLoginInterceptor();
     }
 
+    @Bean
+    public ClearThreadLocalInterceptor clearThreadLocalInterceptor(){
+        return new ClearThreadLocalInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(checkLoginInterceptor())
                 .addPathPatterns("/**");
+        registry.addInterceptor(clearThreadLocalInterceptor())
+                .addPathPatterns("/**");
     }
+
 }

@@ -73,6 +73,11 @@ public class UserServiceImpl implements UserService {
         return users.get(0);
     }
 
+    @Override
+    public User getCurrentUser() {
+        return jwtTokenUtil.getCurrentUserFromHeader();
+    }
+
     private void checkUserRegisterParam(UserRegisterParam registerParam) {
         Asserts.failIsTrue(StrUtil.isEmpty(registerParam.getUsername()), "用户名不为空");
         QueryWrapper<User> wrapper = new QueryWrapper<>();

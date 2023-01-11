@@ -30,4 +30,9 @@ public interface UserService {
      */
     User getUserFromEmailAddress(String emailAddress);
 
+    /**
+     * 获得当前登陆用户的信息
+     * @return
+     */
+    User getCurrentUser();
 }

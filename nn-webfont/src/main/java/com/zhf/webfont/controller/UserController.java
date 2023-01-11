@@ -3,6 +3,8 @@ package com.zhf.webfont.controller;
 import com.zhf.common.returnType.CommonResult;
 import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.bo.UserRegisterParam;
+import com.zhf.webfont.config.NeedLogin;
+import com.zhf.webfont.po.User;
 import com.zhf.webfont.service.MailService;
 import com.zhf.webfont.service.UserService;
 import io.swagger.annotations.Api;
@@ -45,6 +47,14 @@ public class UserController {
     public CommonResult register(@RequestBody UserRegisterParam userRegisterParam){
         userService.register(userRegisterParam);
         return CommonResult.successWithMsg("注册成功");
+    }
+
+    @ApiOperation("获得登陆用户信息")
+    @GetMapping("getCurrentUser")
+    @NeedLogin
+    public CommonResult getCurrentUser(){
+        User user = userService.getCurrentUser();
+        return CommonResult.success(user);
     }
 
 }
