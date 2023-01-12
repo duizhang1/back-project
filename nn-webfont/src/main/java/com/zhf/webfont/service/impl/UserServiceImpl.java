@@ -75,7 +75,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentUser() {
-        return jwtTokenUtil.getCurrentUserFromHeader();
+        User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
+        Asserts.failIsTrue(currentUser == null,"暂未登陆或者登陆已过期");
+        return currentUser;
     }
 
     private void checkUserRegisterParam(UserRegisterParam registerParam) {

@@ -51,7 +51,6 @@ public class UserController {
 
     @ApiOperation("获得登陆用户信息")
     @GetMapping("getCurrentUser")
-    @NeedLogin
     public CommonResult getCurrentUser(){
         User user = userService.getCurrentUser();
         return CommonResult.success(user);

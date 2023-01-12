@@ -65,21 +65,10 @@ public class CheckLoginInterceptor implements AsyncHandlerInterceptor {
             if (!(loginController != null && loginController.value()) && !(needLoginMehtod != null && needLoginMehtod.value())){
                 return true;
             }
-            //该方法需要校验是否登录
-            String account = jwtTokenUtil.getAccountFromHeader();
-            if (account == null){
-                setResponseMsg(response);
-                return false;
-            }
-            // 查询用户姓名是否有相关账号
-            User user = userService.getUserFromEmailAddress(account);
+            // 查询当前请求下的当前用户
+            User user = jwtTokenUtil.getCurrentUserFromHeader();
             // 如果不存在就直接返回错误
             if (user == null){
-                setResponseMsg(response);
-                return false;
-            }
-            threadLocalUtil.set(ThreadLocalUtil.CURRENT_USER,user);
-            if (!jwtTokenUtil.isTokenExpired()){
                 setResponseMsg(response);
                 return false;
             }

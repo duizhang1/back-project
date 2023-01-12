@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zhf.common.util.RequestUtil;
 import com.zhf.common.util.ThreadLocalUtil;
-import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.po.User;
 import com.zhf.webfont.service.UserService;
 import io.jsonwebtoken.Claims;
@@ -61,57 +60,33 @@ public class JwtTokenUtil {
         return authHeader.substring(tokenHead.length());
     }
 
-    public String getAccountFromHeader(){
-        HttpServletRequest currentRequest = RequestUtil.getCurrentRequest();
-        String authHeader = currentRequest.getHeader(tokenHeader);
-        if (StrUtil.isEmpty(authHeader) || authHeader.length() <= tokenHead.length()){
-            return null;
-        }
-        String authToken = authHeader.substring(tokenHead.length());
-        return getAccountFromToken(authToken);
-    }
-
+    /**
+     * 返回null的条件：
+     * 1.token为空或者已经过期
+     * 2.token中的账号不存在，即token负载中没有信息
+     * 3.账号对应的用户不存在
+     * 不出现上述情况，自动向threadLocalUtil中设置user对象，并返回。
+     * 当前请求的线程跨域在threadLocalUtil中继续获得该user对象，无需继续请求
+     * 并且配置的拦截器会在请求返回时自动清空threadLocalUtil中的值，防止内存泄露
+     * @return
+     */
     public User getCurrentUserFromHeader(){
         if (threadLocalUtil.get(ThreadLocalUtil.CURRENT_USER) == null){
-            String accountFromHeader = getAccountFromHeader();
+            String authToken = getTokenFromHeader();
+            if (StrUtil.isEmpty(authToken) || isTokenExpired(authToken)){
+                return null;
+            }
+            String accountFromHeader = getAccountFromToken(authToken);
+            if (StrUtil.isEmpty(accountFromHeader)){
+                return null;
+            }
             User user = userService.getUserFromEmailAddress(accountFromHeader);
+            if (user == null){
+                return null;
+            }
             threadLocalUtil.set(ThreadLocalUtil.CURRENT_USER,user);
         }
         return (User) threadLocalUtil.get(ThreadLocalUtil.CURRENT_USER);
-    }
-
-    /**
-     * 根据负责生成JWT的token
-     */
-    private String generateToken(Map<String, Object> claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
-    }
-
-    /**
-     * 从token中获取JWT中的负载
-     */
-    private Claims  getClaimsFromToken(String token) {
-        Claims claims = null;
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(secret)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            LOGGER.info("JWT格式验证失败:{}", token);
-        }
-        return claims;
-    }
-
-    /**
-     * 生成token的过期时间
-     */
-    private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * 1000);
     }
 
     /**
@@ -129,15 +104,6 @@ public class JwtTokenUtil {
     }
 
     /**
-     * 判断请求中的token是否已经失效
-     */
-    public boolean isTokenExpired() {
-        String token = getTokenFromHeader();
-        Date expiredDate = getExpiredDateFromToken(token);
-        return expiredDate.before(new Date());
-    }
-
-    /**
      * 判断token是否已经失效
      * @param token
      * @return
@@ -147,13 +113,6 @@ public class JwtTokenUtil {
         return expiredDate.before(new Date());
     }
 
-    /**
-     * 从token中获取过期时间
-     */
-    private Date getExpiredDateFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getExpiration();
-    }
 
     /**
      * 根据用户信息生成token
@@ -207,5 +166,47 @@ public class JwtTokenUtil {
         Date refreshDate = new Date();
         //刷新时间在创建时间的指定时间内
         return refreshDate.after(created) && refreshDate.before(DateUtil.offsetSecond(created, time));
+    }
+
+    /**
+     * 生成token的过期时间
+     */
+    private Date generateExpirationDate() {
+        return new Date(System.currentTimeMillis() + expiration * 1000);
+    }
+
+    /**
+     * 从token中获取过期时间
+     */
+    private Date getExpiredDateFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.getExpiration();
+    }
+
+    /**
+     * 从token中获取JWT中的负载
+     */
+    private Claims  getClaimsFromToken(String token) {
+        Claims claims = null;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            LOGGER.info("JWT格式验证失败:{}", token);
+        }
+        return claims;
+    }
+
+    /**
+     * 根据负责生成JWT的token
+     */
+    private String generateToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(generateExpirationDate())
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 }
