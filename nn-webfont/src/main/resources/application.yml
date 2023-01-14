@@ -29,3 +29,10 @@ redis:
     articleStoreNumber: 'article:storeNumber'
   expire:
     fiveMin: 300 # 5分钟
+
+qiniu:
+  accessKey: cQlOrwEvBPZJCNI5Lg6CGSJ1Hj3ivkKbTeXHO_4Y
+  secretKey: de0rNkuTiZfwhYFeC2_QcA7RZ8EsTQMTCFkeuev3
+  notnullBucket: 'notnull-project' # 空间名管理
+  folderName: 'webfont' # 文件夹管理
+  domainName: 'resource.duizhangz.cn' # 域名管理

@@ -30,6 +30,7 @@
         <swagger-annotations.version>1.6.0</swagger-annotations.version>
         <mybatisplus.version>3.5.3.1</mybatisplus.version>
         <spring-security-core.version>6.0.1</spring-security-core.version>
+        <qiniu-java-sdk.version>7.10.2</qiniu-java-sdk.version>
     </properties>
 
 
@@ -132,7 +133,11 @@
                 <version>${spring-security-core.version}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu-java-sdk.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
