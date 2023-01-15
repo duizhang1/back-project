@@ -61,4 +61,10 @@ public interface ArticleService {
      * @param articleId
      */
     void dislikeArticle(String articleId);
+
+    /**
+     * 检查是否能对文章进行更新
+     * @param id
+     */
+    Article isCanUpdateArticle(String id);
 }

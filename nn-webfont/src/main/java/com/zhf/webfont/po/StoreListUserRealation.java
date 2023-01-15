@@ -9,10 +9,10 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * @Author 10276
- * @Date 2023/1/9 22:41
+ * 
+ * @TableName wf_store_list_user_realation
  */
-@TableName(value ="wf_storelist_user_realation")
+@TableName(value ="wf_store_list_user_realation")
 @Data
 public class StoreListUserRealation implements Serializable {
     /**
@@ -32,9 +32,14 @@ public class StoreListUserRealation implements Serializable {
     private String articleId;
 
     /**
-     * 收藏时间
+     * 创建时间
      */
-    private Date storeTime;
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

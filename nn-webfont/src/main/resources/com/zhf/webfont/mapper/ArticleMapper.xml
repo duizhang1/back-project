@@ -12,6 +12,7 @@
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="creatorId" column="creator_id" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="sortId" column="sort_id" jdbcType="VARCHAR"/>
             <result property="labelId" column="label_id" jdbcType="VARCHAR"/>
             <result property="readCount" column="read_count" jdbcType="INTEGER"/>
@@ -26,7 +27,7 @@
         summary,content,creator_id,
         create_time,sort_id,label_id,
         read_count,like_count,store_count,
-        title_state,score
+        title_state,score,update_time
     </sql>
 
     <resultMap id="ArticleListShowParamMap"
@@ -44,8 +45,8 @@
         from wf_article a
         left join wf_sort s on s.uuid = a.sort_id
         left join wf_label l on l.uuid = a.label_id
-        <if test="sortId != null">
-            where a.sort_id = #{sortId}
+        <if test="articleParam.sortId != null">
+            where a.sort_id = #{articleParam.sortId}
         </if>
     </select>
 

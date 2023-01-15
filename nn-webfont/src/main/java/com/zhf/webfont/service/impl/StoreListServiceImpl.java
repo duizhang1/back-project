@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 /**
 * @author 10276
-* @description 针对表【wf_storelist】的数据库操作Service实现
-* @createDate 2023-01-09 22:25:46
+* @description 针对表【wf_store_list】的数据库操作Service实现
+* @createDate 2023-01-14 22:12:51
 */
 @Service
 public class StoreListServiceImpl extends ServiceImpl<StoreListMapper, StoreList>

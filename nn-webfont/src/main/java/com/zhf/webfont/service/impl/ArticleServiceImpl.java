@@ -75,6 +75,7 @@ public class ArticleServiceImpl implements ArticleService {
     public void updateArticle(Article article) {
         checkCanUpdateArticle(article);
 
+        article.setUpdateTime(new Date());
         int update = articleMapper.updateById(article);
         Asserts.failIsTrue(update < 1,"文章更新失败");
     }
@@ -129,13 +130,22 @@ public class ArticleServiceImpl implements ArticleService {
         StoreListUserRealation storeListUserRealation = new StoreListUserRealation();
         storeListUserRealation.setSortListId(storeArticleParam.getStoreListId());
         storeListUserRealation.setArticleId(storeArticleParam.getArticleId());
-        storeListUserRealation.setStoreTime(new Date());
+        storeListUserRealation.setCreateTime(new Date());
+        storeListUserRealation.setUpdateTime(new Date());
 
         TransactionUtil.transaction(() ->{
             boolean save = storeListUserRealationService.save(storeListUserRealation);
             Asserts.failIsTrue(!save,"收藏文章失败");
         });
         articleCacheService.incrArticleStore(storeArticleParam.getArticleId());
+    }
+
+    @Override
+    public Article isCanUpdateArticle(String id) {
+        User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
+        Article articleInfo = checkArticleExist(id);
+        Asserts.failIsTrue(!currentUser.getUuid().equals(articleInfo.getCreatorId()),"当前用户不能修改文章");
+        return articleInfo;
     }
 
     private void checkCanLikeOrStoreArticle(String articleId) {

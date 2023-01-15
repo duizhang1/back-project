@@ -2,18 +2,18 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhf.webfont.mapper.StoreListUserRealationMapper">
+<mapper namespace="com.zhf.webfont.mapper.SortMapper">
 
-    <resultMap id="BaseResultMap" type="com.zhf.webfont.po.StoreListUserRealation">
+    <resultMap id="BaseResultMap" type="com.zhf.webfont.po.Sort">
             <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
-            <result property="sortListId" column="sort_list_id" jdbcType="VARCHAR"/>
-            <result property="articleId" column="article_id" jdbcType="VARCHAR"/>
+            <result property="sortName" column="sort_name" jdbcType="VARCHAR"/>
+            <result property="routeName" column="route_name" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        uuid,sort_list_id,article_id,
+        uuid,sort_name,route_name,
         create_time,update_time
     </sql>
 </mapper>

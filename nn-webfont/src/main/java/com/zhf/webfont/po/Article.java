@@ -34,6 +34,8 @@ public class Article {
 
     private Date createTime;
 
+    private Date updateTime;
+
     private String sortId;
 
     private String labelId;

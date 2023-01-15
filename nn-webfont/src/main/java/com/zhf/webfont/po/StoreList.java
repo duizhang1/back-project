@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
 /**
- * @Author 10276
- * @Date 2023/1/9 22:40
+ * 
+ * @TableName wf_store_list
  */
-@TableName(value ="wf_storelist")
+@TableName(value ="wf_store_list")
 @Data
 public class StoreList implements Serializable {
     /**
@@ -39,6 +40,16 @@ public class StoreList implements Serializable {
      * 用户ID
      */
     private String userId;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

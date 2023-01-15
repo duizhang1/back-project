@@ -52,7 +52,7 @@ public class ArticleController {
 
     @ApiOperation("获取文章列表")
     @GetMapping("getArticleList")
-    public CommonResult getArticleList(@RequestBody ArticleListParam articleListParam){
+    public CommonResult getArticleList(ArticleListParam articleListParam){
         List<ArticleListShowParam> articles = articleService.getArticleList(articleListParam);
         return CommonResult.success(articles);
     }
@@ -86,6 +86,14 @@ public class ArticleController {
     public CommonResult storeArticle(@RequestBody StoreArticleParam storeArticleParam){
         articleService.storeArticle(storeArticleParam);
         return CommonResult.successWithMsg("收藏成功");
+    }
+
+    @ApiOperation("是否能更新该文章")
+    @GetMapping("isCanUpdateArticle")
+    @NeedLogin
+    public CommonResult isCanUpdateArticle(String id){
+        Article articleInfo = articleService.isCanUpdateArticle(id);
+        return CommonResult.success(articleInfo);
     }
 
 }

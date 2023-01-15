@@ -10,11 +10,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName wf_label
+ * @TableName wf_user_article_click_relation
  */
-@TableName(value ="wf_label")
+@TableName(value ="wf_user_article_click_relation")
 @Data
-public class Label implements Serializable {
+public class UserArticleClickRelation implements Serializable {
     /**
      * 主键
      */
@@ -22,9 +22,19 @@ public class Label implements Serializable {
     private String uuid;
 
     /**
-     * 标签名
+     * 用户ID
      */
-    private String labelName;
+    private String userId;
+
+    /**
+     * 文章ID
+     */
+    private String articleId;
+
+    /**
+     * 点赞状态:(1:点击，2:取消)
+     */
+    private Integer state;
 
     /**
      * 创建时间

@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         BeanUtil.copyProperties(userRegisterParam,user);
         user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
         user.setAvatar("https://p3-passport.byteimg.com/img/mosaic-legacy/3795/3033762272~180x180.awebp");
         user.setPassword(passwordEncoder.encode(userRegisterParam.getPassword()));
         int count = userMapper.insert(user);

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhf.webfont.bo.ArticleListParam;
 import com.zhf.webfont.bo.ArticleListShowParam;
 import com.zhf.webfont.po.Article;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,6 +21,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @param articleListParam
      * @return
      */
-    IPage<ArticleListShowParam> getArticleListShowParamList(IPage<ArticleListShowParam> page, ArticleListParam articleListParam);
+    IPage<ArticleListShowParam> getArticleListShowParamList(IPage<ArticleListShowParam> page,@Param("articleParam") ArticleListParam articleListParam);
 
 }
