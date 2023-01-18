@@ -6,6 +6,7 @@ import com.zhf.webfont.bo.StoreArticleParam;
 import com.zhf.webfont.po.Article;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 10276
@@ -67,4 +68,11 @@ public interface ArticleService {
      * @param id
      */
     Article isCanUpdateArticle(String id);
+
+    /**
+     * 获得文章和创建者的信息
+     * @param articleId
+     * @return
+     */
+    Map<String, Object> getArticleAndUserInfo(String articleId);
 }

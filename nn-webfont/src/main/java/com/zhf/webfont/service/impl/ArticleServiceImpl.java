@@ -12,6 +12,7 @@ import com.zhf.webfont.bo.ArticleListParam;
 import com.zhf.webfont.bo.ArticleListShowParam;
 import com.zhf.webfont.bo.StoreArticleParam;
 import com.zhf.webfont.mapper.ArticleMapper;
+import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.Article;
 import com.zhf.webfont.po.StoreList;
 import com.zhf.webfont.po.StoreListUserRealation;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 10276
@@ -33,6 +36,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Resource
     private ArticleMapper articleMapper;
+    @Resource
+    private UserMapper userMapper;
     @Resource
     private UserService userService;
     @Resource
@@ -82,7 +87,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleListShowParam> getArticleList(ArticleListParam articleListParam) {
-
+        String sortRoute = articleListParam.getSortRoute();
         // 按最新排序
         if (ArticleOrderEnum.NEW.getValue().equals(articleListParam.getOrderBy())){
             Page<ArticleListShowParam> page = new Page<>(articleListParam.getCurrent(), articleListParam.getSize());
@@ -90,7 +95,14 @@ public class ArticleServiceImpl implements ArticleService {
             orderItem.setColumn("create_time");
             orderItem.setAsc(false);
             page.addOrder(orderItem);
-            IPage<ArticleListShowParam> articleListShowParamList = articleMapper.getArticleListShowParamList(page, articleListParam);
+            IPage<ArticleListShowParam> articleListShowParamList = null;
+            if ("all".equals(sortRoute)){
+                articleListParam.setSortRoute(null);
+            }else if ("focus".equals(sortRoute)){
+                // todo 获得当前用户关注列表，然后按最新的时间排序获得发布的文章
+                return null;
+            }
+            articleListShowParamList = articleMapper.getArticleListShowParamList(page, articleListParam);
             return articleListShowParamList.getRecords();
         }else if (ArticleOrderEnum.HOT.getValue().equals(articleListParam.getOrderBy())){
 
@@ -146,6 +158,17 @@ public class ArticleServiceImpl implements ArticleService {
         Article articleInfo = checkArticleExist(id);
         Asserts.failIsTrue(!currentUser.getUuid().equals(articleInfo.getCreatorId()),"当前用户不能修改文章");
         return articleInfo;
+    }
+
+    @Override
+    public Map<String, Object> getArticleAndUserInfo(String articleId) {
+        checkArticleExist(articleId);
+        Article articleInfo = getArticleInfo(articleId);
+        Map<String, Object> map = new HashMap<>(2);
+        map.put("article",articleInfo);
+        User user = userMapper.selectById(articleInfo.getCreatorId());
+        map.put("author",user);
+        return map;
     }
 
     private void checkCanLikeOrStoreArticle(String articleId) {

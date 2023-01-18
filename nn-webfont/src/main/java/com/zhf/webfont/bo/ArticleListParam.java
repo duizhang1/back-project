@@ -33,7 +33,7 @@ public class ArticleListParam {
      * 分类的ID，如果为空就是全部类别
      */
     @ApiModelProperty(value = "分类ID",required = true)
-    private String sortId;
+    private String sortRoute;
 
     /**
      * 排序种类，1是最新，2是热榜

@@ -5,21 +5,21 @@
 <mapper namespace="com.zhf.webfont.mapper.ArticleMapper">
 
     <resultMap id="BaseResultMap" type="com.zhf.webfont.po.Article">
-            <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="img" column="img" jdbcType="VARCHAR"/>
-            <result property="summary" column="summary" jdbcType="VARCHAR"/>
-            <result property="content" column="content" jdbcType="VARCHAR"/>
-            <result property="creatorId" column="creator_id" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="sortId" column="sort_id" jdbcType="VARCHAR"/>
-            <result property="labelId" column="label_id" jdbcType="VARCHAR"/>
-            <result property="readCount" column="read_count" jdbcType="INTEGER"/>
-            <result property="likeCount" column="like_count" jdbcType="INTEGER"/>
-            <result property="storeCount" column="store_count" jdbcType="INTEGER"/>
-            <result property="titleState" column="title_state" jdbcType="INTEGER"/>
-            <result property="score" column="score" jdbcType="INTEGER"/>
+        <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="img" column="img" jdbcType="VARCHAR"/>
+        <result property="summary" column="summary" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="creatorId" column="creator_id" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="sortId" column="sort_id" jdbcType="VARCHAR"/>
+        <result property="labelId" column="label_id" jdbcType="VARCHAR"/>
+        <result property="readCount" column="read_count" jdbcType="INTEGER"/>
+        <result property="likeCount" column="like_count" jdbcType="INTEGER"/>
+        <result property="storeCount" column="store_count" jdbcType="INTEGER"/>
+        <result property="titleState" column="title_state" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -35,18 +35,26 @@
                extends="BaseResultMap">
         <result property="sortName" column="sort_name" jdbcType="VARCHAR"/>
         <result property="labelName" column="label_name" jdbcType="VARCHAR"/>
+        <result property="creatorName" column="creator_name" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <select id="getArticleListShowParamList" resultMap="ArticleListShowParamMap" parameterType="com.zhf.webfont.bo.ArticleListParam">
+    <select id="getArticleListShowParamList" resultMap="ArticleListShowParamMap"
+            parameterType="com.zhf.webfont.bo.ArticleListParam">
         select
-            <include refid="Base_Column_List"/>,
-               s.sort_name,
-               l.label_name
+            a.uuid,title,img,
+            summary,content,creator_id,
+            a.create_time,sort_id,label_id,
+            read_count,like_count,store_count,
+            title_state,score,a.update_time,
+            s.sort_name,
+            l.label_name,
+            u.username creator_name
         from wf_article a
         left join wf_sort s on s.uuid = a.sort_id
         left join wf_label l on l.uuid = a.label_id
-        <if test="articleParam.sortId != null">
-            where a.sort_id = #{articleParam.sortId}
+        left join wf_user u on a.creator_id = u.uuid
+        <if test="articleParam.sortRoute != null">
+            where s.route_name = #{articleParam.sortRoute}
         </if>
     </select>
 

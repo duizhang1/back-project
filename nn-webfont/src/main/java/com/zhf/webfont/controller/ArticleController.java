@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 10276
@@ -62,6 +63,13 @@ public class ArticleController {
     public CommonResult getArticleInfo(String articleId){
         Article article = articleService.getArticleInfo(articleId);
         return CommonResult.success(article);
+    }
+
+    @ApiOperation("获得文章以及用户信息")
+    @GetMapping("getArticleAndUserInfo")
+    public CommonResult getArticleAndUserInfo(String articleId){
+        Map<String,Object> map = articleService.getArticleAndUserInfo(articleId);
+        return CommonResult.success(map);
     }
 
     @ApiOperation("点赞文章")
