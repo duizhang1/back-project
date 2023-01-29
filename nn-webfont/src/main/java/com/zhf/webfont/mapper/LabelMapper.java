@@ -3,6 +3,8 @@ package com.zhf.webfont.mapper;
 import com.zhf.webfont.po.Label;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
 * @author 10276
 * @description 针对表【wf_label】的数据库操作Mapper
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface LabelMapper extends BaseMapper<Label> {
 
+    List<Label> getLabelsFromArticleId(String articleId);
 }
 
 

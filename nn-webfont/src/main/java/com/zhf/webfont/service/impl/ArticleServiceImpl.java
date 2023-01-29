@@ -1,31 +1,32 @@
 package com.zhf.webfont.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zhf.common.enumType.ArticleOrderEnum;
+import com.zhf.common.enumType.LikeStateEnum;
 import com.zhf.common.enumType.TitleStateEnum;
 import com.zhf.common.exception.Asserts;
 import com.zhf.common.util.TransactionUtil;
+import com.zhf.webfont.bo.ArticleInsertParam;
 import com.zhf.webfont.bo.ArticleListParam;
 import com.zhf.webfont.bo.ArticleListShowParam;
 import com.zhf.webfont.bo.StoreArticleParam;
+import com.zhf.webfont.mapper.ArticleLabelRelationMapper;
 import com.zhf.webfont.mapper.ArticleMapper;
+import com.zhf.webfont.mapper.LabelMapper;
 import com.zhf.webfont.mapper.UserMapper;
-import com.zhf.webfont.po.Article;
-import com.zhf.webfont.po.StoreList;
-import com.zhf.webfont.po.StoreListUserRealation;
-import com.zhf.webfont.po.User;
+import com.zhf.webfont.po.*;
 import com.zhf.webfont.service.*;
 import com.zhf.webfont.util.JwtTokenUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author 10276
@@ -41,6 +42,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private UserService userService;
     @Resource
+    private ArticleLabelRelationMapper articleLabelRelationMapper;
+    @Resource
+    private LabelService labelService;
+    @Resource
+    private ArticleClickRelationService articleClickRelationService;
+    @Resource
     private JwtTokenUtil jwtTokenUtil;
     @Resource
     private ArticleCacheService articleCacheService;
@@ -48,20 +55,34 @@ public class ArticleServiceImpl implements ArticleService {
     private StoreListUserRealationService storeListUserRealationService;
 
     @Override
-    public void insertArticle(Article article) {
-        checkArticleParams(article);
+    public void insertArticle(ArticleInsertParam articleInsertParam) {
+        checkArticleParams(articleInsertParam);
         
         User user = jwtTokenUtil.getCurrentUserFromHeader();
+        Article article = new Article();
+        BeanUtil.copyProperties(articleInsertParam,article);
 
         article.setCreateTime(new Date());
+        article.setUpdateTime(new Date());
         article.setCreatorId(user.getUuid());
         article.setLikeCount(0);
         article.setReadCount(0);
         article.setStoreCount(0);
         article.setTitleState(TitleStateEnum.REVIEWING.getValue());
 
-        int insert = articleMapper.insert(article);
-        Asserts.failIsTrue(insert < 1,"添加失败");
+        TransactionUtil.transaction(()->{
+            int insert = articleMapper.insert(article);
+            Asserts.failIsTrue(insert < 1,"添加失败");
+            for (String labelId : articleInsertParam.getLabelIds()) {
+                ArticleLabelRelation articleLabelRelation = new ArticleLabelRelation();
+                articleLabelRelation.setLabelId(labelId);
+                articleLabelRelation.setArticleId(article.getUuid());
+                articleLabelRelation.setCreateTime(new Date());
+                articleLabelRelation.setUpdateTime(new Date());
+                int insert1 = articleLabelRelationMapper.insert(articleLabelRelation);
+                Asserts.failIsTrue(insert1 < 1,"添加失败");
+            }
+        });
     }
 
     @Override
@@ -77,12 +98,29 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void updateArticle(Article article) {
-        checkCanUpdateArticle(article);
+    public void updateArticle(ArticleInsertParam articleInsertParam) {
+        checkCanUpdateArticle(articleInsertParam);
+
+        Article article = new Article();
+        BeanUtil.copyProperties(articleInsertParam,article);
+        QueryWrapper<ArticleLabelRelation> wrapper = new QueryWrapper<>();
+        wrapper.eq("article_id",articleInsertParam.getUuid());
 
         article.setUpdateTime(new Date());
-        int update = articleMapper.updateById(article);
-        Asserts.failIsTrue(update < 1,"文章更新失败");
+        TransactionUtil.transaction(()->{
+            int update = articleMapper.updateById(article);
+            Asserts.failIsTrue(update < 1,"文章更新失败");
+            articleLabelRelationMapper.delete(wrapper);
+            for (String labelId : articleInsertParam.getLabelIds()) {
+                ArticleLabelRelation articleLabelRelation = new ArticleLabelRelation();
+                articleLabelRelation.setLabelId(labelId);
+                articleLabelRelation.setArticleId(article.getUuid());
+                articleLabelRelation.setCreateTime(new Date());
+                articleLabelRelation.setUpdateTime(new Date());
+                int insert1 = articleLabelRelationMapper.insert(articleLabelRelation);
+                Asserts.failIsTrue(insert1 < 1,"更新失败");
+            }
+        });
     }
 
     @Override
@@ -119,9 +157,26 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void likeArticle(String articleId) {
         checkCanLikeOrStoreArticle(articleId);
+        User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
+        ArticleClickRelation articleClickRelation = articleClickRelationService.getCurUserClick(articleId);
 
-        //向redis中添加一条点赞记录，以及更新点赞数
-        articleCacheService.likeArticlePip(articleId);
+        if (articleClickRelation != null){
+            articleClickRelation.setUpdateTime(new Date());
+            articleClickRelation.setState(LikeStateEnum.LIKE.getValue());
+            articleClickRelationService.updateById(articleClickRelation);
+        }else{
+            ArticleClickRelation clickRelation = new ArticleClickRelation();
+            clickRelation.setArticleId(articleId);
+            clickRelation.setUserId(currentUser.getUuid());
+            clickRelation.setCreateTime(new Date());
+            clickRelation.setUpdateTime(new Date());
+            clickRelation.setState(LikeStateEnum.LIKE.getValue());
+            articleClickRelationService.save(clickRelation);
+        }
+
+        // todo 是否需要点赞信息加入redis
+//        articleCacheService.likeArticlePip(articleId);
+
         //todo 添加一条消息通知，即xxx点赞了作者的文章
     }
 
@@ -129,10 +184,16 @@ public class ArticleServiceImpl implements ArticleService {
     public void dislikeArticle(String articleId) {
         checkCanLikeOrStoreArticle(articleId);
 
-        //向redis中取消点赞记录，没有记录就为false，说明已经存入数据库中
-        if (!articleCacheService.dislikeArticle(articleId)){
+        User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
+        ArticleClickRelation articleClickRelation = articleClickRelationService.getCurUserClick(articleId);
 
+        if (articleClickRelation != null){
+            articleClickRelation.setUpdateTime(new Date());
+            articleClickRelation.setState(LikeStateEnum.DISLIKE.getValue());
+            articleClickRelationService.updateById(articleClickRelation);
         }
+
+        // todo 向redis中取消点赞记录
     }
 
     @Override
@@ -149,15 +210,22 @@ public class ArticleServiceImpl implements ArticleService {
             boolean save = storeListUserRealationService.save(storeListUserRealation);
             Asserts.failIsTrue(!save,"收藏文章失败");
         });
-        articleCacheService.incrArticleStore(storeArticleParam.getArticleId());
+//        articleCacheService.incrArticleStore(storeArticleParam.getArticleId());
     }
 
     @Override
-    public Article isCanUpdateArticle(String id) {
+    public ArticleInsertParam isCanUpdateArticle(String id) {
         User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
         Article articleInfo = checkArticleExist(id);
         Asserts.failIsTrue(!currentUser.getUuid().equals(articleInfo.getCreatorId()),"当前用户不能修改文章");
-        return articleInfo;
+        ArticleInsertParam articleInsertParam = new ArticleInsertParam();
+        BeanUtil.copyProperties(articleInfo,articleInsertParam);
+        List<String> labelIds = new ArrayList<>();
+        for (Label articleLabel : labelService.getLabelsFromArticleId(id)) {
+            labelIds.add(articleLabel.getUuid());
+        }
+        articleInsertParam.setLabelIds(labelIds);
+        return articleInsertParam;
     }
 
     @Override
@@ -166,6 +234,8 @@ public class ArticleServiceImpl implements ArticleService {
         Article articleInfo = getArticleInfo(articleId);
         Map<String, Object> map = new HashMap<>(2);
         map.put("article",articleInfo);
+        List<Label> labels = labelService.getLabelsFromArticleId(articleId);
+        map.put("labels",labels);
         User user = userMapper.selectById(articleInfo.getCreatorId());
         map.put("author",user);
         return map;
@@ -178,12 +248,12 @@ public class ArticleServiceImpl implements ArticleService {
         Asserts.failIsTrue(checkCurrentUserIsArticleCreator(articleByUuid.getCreatorId()),"不能操作自己的文章");
     }
 
-    private void checkCanUpdateArticle(Article article) {
-        Article articleByUuid = checkArticleExist(article.getUuid());
+    private void checkCanUpdateArticle(ArticleInsertParam articleInsertParam) {
+        Article articleByUuid = checkArticleExist(articleInsertParam.getUuid());
 
         Asserts.failIsTrue(!checkCurrentUserIsArticleCreator(articleByUuid.getCreatorId()),"当前用户没有更新该文章的权限");
 
-        checkArticleParams(article);
+        checkArticleParams(articleInsertParam);
     }
 
     private void checkCanDeleteArticle(String articleId) {
@@ -215,12 +285,12 @@ public class ArticleServiceImpl implements ArticleService {
         return user.getUuid().equals(articleCreatorId);
     }
 
-    private void checkArticleParams(Article article) {
-        Asserts.failIsTrue(StrUtil.isEmpty(article.getTitle()),"文章标题不为空");
-        Asserts.failIsTrue(StrUtil.isEmpty(article.getSortId()),"文章分类不为空");
-        Asserts.failIsTrue(StrUtil.isEmpty(article.getContent()),"文章正文不为空");
-        Asserts.failIsTrue(StrUtil.isEmpty(article.getLabelId()),"文章标签不为空");
-        Asserts.failIsTrue(StrUtil.isEmpty(article.getSummary()),"文章摘要不为空");
+    private void checkArticleParams(ArticleInsertParam articleInsertParam) {
+        Asserts.failIsTrue(StrUtil.isEmpty(articleInsertParam.getTitle()),"文章标题不为空");
+        Asserts.failIsTrue(StrUtil.isEmpty(articleInsertParam.getSortId()),"文章分类不为空");
+        Asserts.failIsTrue(StrUtil.isEmpty(articleInsertParam.getContent()),"文章正文不为空");
+        Asserts.failIsTrue(CollUtil.isEmpty(articleInsertParam.getLabelIds()),"文章标签不为空");
+        Asserts.failIsTrue(StrUtil.isEmpty(articleInsertParam.getSummary()),"文章摘要不为空");
     }
 
 }

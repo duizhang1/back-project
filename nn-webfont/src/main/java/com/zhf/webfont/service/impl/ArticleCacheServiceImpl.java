@@ -14,11 +14,13 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -45,13 +47,18 @@ public class ArticleCacheServiceImpl implements ArticleCacheService {
     private String ARTICLE_LIKE_NUMBER;
     @Value("${redis.key.articleStoreNumber}")
     private String ARTICLE_STORE_NUMBER;
+    @Value("${redis.key.articleUpdateSet}")
+    private String ARTICLE_UPDATE_SET;
+
 
 
     @Override
     @CacheException
     public void incrArticleRead(String articleId) {
+        // 阅读量+1，并向更新文章队列进行添加
         redisService.incr(DATABASE + ":" + ARTICLE_READ_COUNT + ":" + articleId,
                 1);
+        redisService.sAdd(DATABASE + ":" + ARTICLE_UPDATE_SET,articleId);
     }
 
     @Override
@@ -86,5 +93,19 @@ public class ArticleCacheServiceImpl implements ArticleCacheService {
         keys.add(DATABASE + ":" + ARTICLE_LIKE_RECORD + ":" + user.getUuid() + ":" + articleId);
         Boolean execute = redisTemplate.execute(redisScript, keys);
         return execute != null && execute;
+    }
+
+    @Override
+    public List<String> getUpdateArticle() {
+        DefaultRedisScript<List> redisScript = new DefaultRedisScript<>();
+        redisScript.setResultType(List.class);
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("com/zhf/webfont/lua/GetAndClearSet.lua")));
+        List updateList = redisTemplate.execute(redisScript, Arrays.asList(DATABASE + ":" + ARTICLE_UPDATE_SET));
+        return updateList;
+    }
+
+    @Override
+    public Integer getArticleRead(String articleId) {
+        return (Integer) redisService.get(DATABASE + ":" + ARTICLE_READ_COUNT + ":" + articleId);
     }
 }

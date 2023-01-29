@@ -41,6 +41,7 @@ public class BaseRedisConfig {
         redisTemplate.setValueSerializer(serializer);
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(serializer);
+        redisTemplate.setDefaultSerializer(serializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }

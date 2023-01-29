@@ -38,8 +38,6 @@ public class Article {
 
     private String sortId;
 
-    private String labelId;
-
     private Integer readCount;
 
     private Integer likeCount;

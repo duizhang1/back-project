@@ -30,6 +30,7 @@ redis:
     articleLikeRecord: 'article:likeRecord'
     articleLikeNumber: 'article:likeNumber'
     articleStoreNumber: 'article:storeNumber'
+    articleUpdateSet: 'article:updateSet'
   expire:
     fiveMin: 300 # 5分钟
 

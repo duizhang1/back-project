@@ -6,6 +6,9 @@ import com.zhf.webfont.service.LabelService;
 import com.zhf.webfont.mapper.LabelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.List;
+
 /**
 * @author 10276
 * @description 针对表【wf_label】的数据库操作Service实现
@@ -15,6 +18,13 @@ import org.springframework.stereotype.Service;
 public class LabelServiceImpl extends ServiceImpl<LabelMapper, Label>
     implements LabelService{
 
+    @Resource
+    private LabelMapper labelMapper;
+
+    @Override
+    public List<Label> getLabelsFromArticleId(String articleId) {
+        return labelMapper.getLabelsFromArticleId(articleId);
+    }
 }
 
 

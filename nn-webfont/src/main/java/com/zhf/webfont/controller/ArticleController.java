@@ -1,6 +1,7 @@
 package com.zhf.webfont.controller;
 
 import com.zhf.common.returnType.CommonResult;
+import com.zhf.webfont.bo.ArticleInsertParam;
 import com.zhf.webfont.bo.ArticleListParam;
 import com.zhf.webfont.bo.ArticleListShowParam;
 import com.zhf.webfont.bo.StoreArticleParam;
@@ -30,8 +31,8 @@ public class ArticleController {
     @ApiOperation("插入文章，需要登陆")
     @PostMapping("insertArticle")
     @NeedLogin
-    public CommonResult insertArticle(@RequestBody Article article){
-        articleService.insertArticle(article);
+    public CommonResult insertArticle(@RequestBody ArticleInsertParam articleInsertParam){
+        articleService.insertArticle(articleInsertParam);
         return CommonResult.successWithMsg("文章创建成功");
     }
 
@@ -46,8 +47,8 @@ public class ArticleController {
     @ApiOperation("更新文章")
     @PostMapping("updateArticle")
     @NeedLogin
-    public CommonResult updateArticle(@RequestBody Article article){
-        articleService.updateArticle(article);
+    public CommonResult updateArticle(@RequestBody ArticleInsertParam articleInsertParam){
+        articleService.updateArticle(articleInsertParam);
         return CommonResult.successWithMsg("文章更新成功");
     }
 
@@ -100,7 +101,7 @@ public class ArticleController {
     @GetMapping("isCanUpdateArticle")
     @NeedLogin
     public CommonResult isCanUpdateArticle(String id){
-        Article articleInfo = articleService.isCanUpdateArticle(id);
+        ArticleInsertParam articleInfo = articleService.isCanUpdateArticle(id);
         return CommonResult.success(articleInfo);
     }
 

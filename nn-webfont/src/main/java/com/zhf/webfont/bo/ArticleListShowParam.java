@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @Author 10276
  * @Date 2023/1/8 17:13
@@ -20,6 +22,6 @@ public class ArticleListShowParam extends Article {
 
     private String sortName;
 
-    private String labelName;
+    private List<String> labelName;
 
 }

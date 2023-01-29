@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhf.webfont.mapper.ArticleLabelRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhf.webfont.po.ArticleLabelRelation">
+            <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
+            <result property="articleId" column="article_id" jdbcType="VARCHAR"/>
+            <result property="labelId" column="label_id" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        uuid,article_id,label_id,
+        create_time,update_time
+    </sql>
+</mapper>

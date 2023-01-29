@@ -1,5 +1,6 @@
 package com.zhf.webfont.service;
 
+import com.zhf.webfont.bo.ArticleInsertParam;
 import com.zhf.webfont.bo.ArticleListParam;
 import com.zhf.webfont.bo.ArticleListShowParam;
 import com.zhf.webfont.bo.StoreArticleParam;
@@ -15,9 +16,9 @@ import java.util.Map;
 public interface ArticleService {
     /**
      * 创建文章
-     * @param article
+     * @param articleInsertParam
      */
-    void insertArticle(Article article);
+    void insertArticle(ArticleInsertParam articleInsertParam);
 
     /**
      * 通过文章ID删除文章
@@ -27,9 +28,9 @@ public interface ArticleService {
 
     /**
      * 更新文章
-     * @param article
+     * @param articleInsertParam
      */
-    void updateArticle(Article article);
+    void updateArticle(ArticleInsertParam articleInsertParam);
 
     /**
      * 获得文章列表，根据条件获得
@@ -67,7 +68,7 @@ public interface ArticleService {
      * 检查是否能对文章进行更新
      * @param id
      */
-    Article isCanUpdateArticle(String id);
+    ArticleInsertParam isCanUpdateArticle(String id);
 
     /**
      * 获得文章和创建者的信息

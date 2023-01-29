@@ -1,5 +1,7 @@
 package com.zhf.webfont.service;
 
+import java.util.List;
+
 /**
  * @Author 10276
  * @Date 2023/1/8 22:33
@@ -29,4 +31,16 @@ public interface ArticleCacheService {
      * @return
      */
     boolean dislikeArticle(String articleId);
+
+    /**
+     * 获得需要更新的文章的西悉尼
+     * @return
+     */
+    List<String> getUpdateArticle();
+
+    /**
+     * 获得文章的阅读量
+     * @param articleId
+     */
+    Integer getArticleRead(String articleId);
 }
