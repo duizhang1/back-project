@@ -44,6 +44,8 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleLabelRelationMapper articleLabelRelationMapper;
     @Resource
+    private ArticleLabelRelationService articleLabelRelationService;
+    @Resource
     private LabelService labelService;
     @Resource
     private ArticleClickRelationService articleClickRelationService;
@@ -141,6 +143,14 @@ public class ArticleServiceImpl implements ArticleService {
                 return null;
             }
             articleListShowParamList = articleMapper.getArticleListShowParamList(page, articleListParam);
+            for (ArticleListShowParam record : articleListShowParamList.getRecords()) {
+                List<Label> articleLabel = articleLabelRelationService.getArticleLabel(record.getUuid());
+                List<String> labelNames = new ArrayList<>();
+                for (Label label : articleLabel) {
+                    labelNames.add(label.getLabelName());
+                }
+                record.setLabelName(labelNames);
+            }
             return articleListShowParamList.getRecords();
         }else if (ArticleOrderEnum.HOT.getValue().equals(articleListParam.getOrderBy())){
 

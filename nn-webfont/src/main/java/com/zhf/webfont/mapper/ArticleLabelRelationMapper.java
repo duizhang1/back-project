@@ -2,6 +2,9 @@ package com.zhf.webfont.mapper;
 
 import com.zhf.webfont.po.ArticleLabelRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zhf.webfont.po.Label;
+
+import java.util.List;
 
 /**
 * @author 10276
@@ -10,7 +13,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.zhf.webfont.po.ArticleLabelRelation
 */
 public interface ArticleLabelRelationMapper extends BaseMapper<ArticleLabelRelation> {
-
+    /**
+     * 获得文章的标签
+     * @param articleId
+     * @return
+     */
+    List<Label> getArticleLabel(String articleId);
 }
 
 

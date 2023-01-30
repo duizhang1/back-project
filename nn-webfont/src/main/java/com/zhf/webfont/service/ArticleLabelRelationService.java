@@ -2,6 +2,9 @@ package com.zhf.webfont.service;
 
 import com.zhf.webfont.po.ArticleLabelRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zhf.webfont.po.Label;
+
+import java.util.List;
 
 /**
 * @author 10276
@@ -9,5 +12,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2023-01-28 14:07:02
 */
 public interface ArticleLabelRelationService extends IService<ArticleLabelRelation> {
+
+    /**
+     * 获得文章的标签
+     * @param articleId
+     * @return
+     */
+    List<Label> getArticleLabel(String articleId);
 
 }

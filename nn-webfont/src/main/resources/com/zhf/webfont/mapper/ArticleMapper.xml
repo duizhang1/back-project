@@ -34,9 +34,6 @@
                extends="BaseResultMap">
         <result property="sortName" column="sort_name" jdbcType="VARCHAR"/>
         <result property="creatorName" column="creator_name" jdbcType="VARCHAR"/>
-        <collection property="labelName" ofType="java.lang.String" javaType="java.util.List" >
-            <result column="label_name"/>
-        </collection>
     </resultMap>
 
     <select id="getArticleListShowParamList" resultMap="ArticleListShowParamMap"
@@ -48,12 +45,9 @@
             read_count,like_count,store_count,
             title_state,score,a.update_time,
             s.sort_name,
-            l.label_name,
             u.username creator_name
         from wf_article a
-        left join wf_sort s on s.uuid = a.sort_id
-        left join wf_article_label_relation lr on a.uuid = lr.article_id
-        left join wf_label l on l.uuid = lr.label_id
+        join wf_sort s on s.uuid = a.sort_id
         left join wf_user u on a.creator_id = u.uuid
         <if test="articleParam.sortRoute != null">
             where s.route_name = #{articleParam.sortRoute}

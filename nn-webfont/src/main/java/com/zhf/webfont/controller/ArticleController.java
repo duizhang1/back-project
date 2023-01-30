@@ -74,7 +74,7 @@ public class ArticleController {
     }
 
     @ApiOperation("点赞文章")
-    @PostMapping("likeArticle")
+    @GetMapping("likeArticle")
     @NeedLogin
     public CommonResult likeArticle(String articleId){
         articleService.likeArticle(articleId);
@@ -82,7 +82,7 @@ public class ArticleController {
     }
 
     @ApiOperation("取消点赞")
-    @PostMapping("dislikeArticle")
+    @GetMapping("dislikeArticle")
     @NeedLogin
     public CommonResult dislikeArticle(String articleId){
         articleService.dislikeArticle(articleId);

@@ -16,4 +16,11 @@
         uuid,article_id,label_id,
         create_time,update_time
     </sql>
+    <select id="getArticleLabel" resultType="com.zhf.webfont.po.Label">
+        select
+            wl.uuid, wl.label_name, wl.create_time, wl.update_time
+        from wf_article_label_relation alr
+        left join wf_label wl on alr.label_id = wl.uuid
+        where alr.article_id = #{articleId}
+    </select>
 </mapper>
