@@ -89,14 +89,6 @@ public class ArticleController {
         return CommonResult.successWithMsg("取消成功");
     }
 
-    @ApiOperation("收藏文章")
-    @PostMapping("storeArticle")
-    @NeedLogin
-    public CommonResult storeArticle(@RequestBody StoreArticleParam storeArticleParam){
-        articleService.storeArticle(storeArticleParam);
-        return CommonResult.successWithMsg("收藏成功");
-    }
-
     @ApiOperation("是否能更新该文章")
     @GetMapping("isCanUpdateArticle")
     @NeedLogin

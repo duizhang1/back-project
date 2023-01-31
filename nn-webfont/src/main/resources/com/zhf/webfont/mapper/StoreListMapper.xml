@@ -5,13 +5,13 @@
 <mapper namespace="com.zhf.webfont.mapper.StoreListMapper">
 
     <resultMap id="BaseResultMap" type="com.zhf.webfont.po.StoreList">
-            <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="summary" column="summary" jdbcType="VARCHAR"/>
-            <result property="state" column="state" jdbcType="VARCHAR"/>
-            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="summary" column="summary" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -19,4 +19,20 @@
         state,user_id,create_time,
         update_time
     </sql>
+
+    <resultMap id="storeListWithIsStore"
+               type="com.zhf.webfont.bo.StoreListWithIsStoreParam"
+               extends="BaseResultMap">
+        <result property="isStore" column="is_store"/>
+    </resultMap>
+
+    <select id="getStoreListWithIsStore" resultMap="storeListWithIsStore">
+        select
+            wsl.*,
+            if((select 1 from wf_article_store_list_relation slr
+                where wsl.uuid = slr.store_list_id and slr.article_id = #{articleId}) > 0,
+                true,false) is_store
+        from wf_store_list wsl
+        where user_id = #{userId}
+    </select>
 </mapper>

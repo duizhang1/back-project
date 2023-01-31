@@ -53,12 +53,6 @@ public interface ArticleService {
     void likeArticle(String articleId);
 
     /**
-     * 收藏文章
-     * @param storeArticleParam
-     */
-    void storeArticle(StoreArticleParam storeArticleParam);
-
-    /**
      * 取消点赞文章
      * @param articleId
      */

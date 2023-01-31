@@ -53,8 +53,6 @@ public class ArticleServiceImpl implements ArticleService {
     private JwtTokenUtil jwtTokenUtil;
     @Resource
     private ArticleCacheService articleCacheService;
-    @Resource
-    private StoreListUserRealationService storeListUserRealationService;
 
     @Override
     public void insertArticle(ArticleInsertParam articleInsertParam) {
@@ -206,22 +204,6 @@ public class ArticleServiceImpl implements ArticleService {
         // todo 向redis中取消点赞记录
     }
 
-    @Override
-    public void storeArticle(StoreArticleParam storeArticleParam) {
-        checkCanLikeOrStoreArticle(storeArticleParam.getArticleId());
-
-        StoreListUserRealation storeListUserRealation = new StoreListUserRealation();
-        storeListUserRealation.setSortListId(storeArticleParam.getStoreListId());
-        storeListUserRealation.setArticleId(storeArticleParam.getArticleId());
-        storeListUserRealation.setCreateTime(new Date());
-        storeListUserRealation.setUpdateTime(new Date());
-
-        TransactionUtil.transaction(() ->{
-            boolean save = storeListUserRealationService.save(storeListUserRealation);
-            Asserts.failIsTrue(!save,"收藏文章失败");
-        });
-//        articleCacheService.incrArticleStore(storeArticleParam.getArticleId());
-    }
 
     @Override
     public ArticleInsertParam isCanUpdateArticle(String id) {

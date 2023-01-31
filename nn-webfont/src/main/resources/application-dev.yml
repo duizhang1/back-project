@@ -18,3 +18,7 @@ spring:
     port: 6379
     password:    # redis密码默认为空
     timeout: 300ms
+
+logging:
+  level:
+    com.zhf.webfont.mapper: debug

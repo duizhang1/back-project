@@ -42,6 +42,11 @@ public class StoreList implements Serializable {
     private String userId;
 
     /**
+     * 文章数
+     */
+    private Integer articleNum;
+
+    /**
      * 创建时间
      */
     private Date createTime;

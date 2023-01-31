@@ -18,7 +18,7 @@ public class ArticleLabelRelation implements Serializable {
     /**
      * 
      */
-    @TableId
+    @TableId(type = IdType.ASSIGN_UUID)
     private String uuid;
 
     /**

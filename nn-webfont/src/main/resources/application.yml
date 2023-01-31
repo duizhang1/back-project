@@ -40,6 +40,3 @@ qiniu:
   notnullBucket: 'notnull-project' # 空间名管理
   folderName: 'webfont' # 文件夹管理
   domainName: 'resource.duizhangz.cn' # 域名管理
-#logging:
-#  level:
-#    com.zhf.webfont.mapper: debug

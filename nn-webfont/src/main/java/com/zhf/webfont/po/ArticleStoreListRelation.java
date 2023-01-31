@@ -10,21 +10,21 @@ import lombok.Data;
 
 /**
  * 
- * @TableName wf_store_list_user_realation
+ * @TableName wf_article_store_list_relation
  */
-@TableName(value ="wf_store_list_user_realation")
+@TableName(value ="wf_article_store_list_relation")
 @Data
-public class StoreListUserRealation implements Serializable {
+public class ArticleStoreListRelation implements Serializable {
     /**
      * uuid主键
      */
-    @TableId(type = IdType.ASSIGN_UUID)
+    @TableId
     private String uuid;
 
     /**
      * 收藏夹ID
      */
-    private String sortListId;
+    private String storeListId;
 
     /**
      * 文章ID
