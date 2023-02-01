@@ -34,6 +34,15 @@ public class ArticleClickRelationServiceImpl extends ServiceImpl<ArticleClickRel
                 .eq("user_id",currentUser.getUuid());
         return articleClickRelationMapper.selectOne(wrapper);
     }
+
+    @Override
+    public ArticleClickRelation getArticleLike(String articleId) {
+        if (jwtTokenUtil.getCurrentUserFromHeader() == null){
+            return null;
+        }else{
+            return getCurUserClick(articleId);
+        }
+    }
 }
 
 

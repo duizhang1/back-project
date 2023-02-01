@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhf.webfont.mapper.ArticleCommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhf.webfont.po.ArticleComment">
+            <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
+            <result property="comment" column="comment" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="articleId" column="article_id" jdbcType="VARCHAR"/>
+            <result property="parentCommentId" column="parent_comment_id" jdbcType="VARCHAR"/>
+            <result property="replyCommentId" column="reply_comment_id" jdbcType="VARCHAR"/>
+            <result property="likeNumber" column="like_number" jdbcType="INTEGER"/>
+            <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        uuid,comment,user_id,
+        article_id,parent_comment_id,reply_comment_id,
+        like_number,create_time,update_time,is_del
+    </sql>
+
+    <resultMap id="articleCommentSingleParamMap" type="com.zhf.webfont.bo.ArticleCommentSingleParam"
+               extends="BaseResultMap">
+        <result property="replyUserName" column="reply_user_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="avatarHref" column="avatar_href"/>
+    </resultMap>
+    <select id="getChildCommentList" resultMap="articleCommentSingleParamMap">
+        select
+               wac.*,
+               wu.username reply_user_name,
+               wuu.username user_name,
+               wuu.avatar avatar_href
+        from wf_article_comment wac
+        left join wf_article_comment wacc on wac.reply_comment_id = wacc.uuid
+        left join wf_user wu on wacc.user_id = wu.uuid
+        left join wf_user wuu on wac.user_id = wuu.uuid
+        where wac.parent_comment_id = #{parentCommentId} and wac.is_del = 0
+        order by wac.create_time
+        limit #{startIndex},#{childSize}
+    </select>
+</mapper>

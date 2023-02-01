@@ -7,6 +7,8 @@ import com.zhf.webfont.bo.ArticleListShowParam;
 import com.zhf.webfont.bo.StoreArticleParam;
 import com.zhf.webfont.config.NeedLogin;
 import com.zhf.webfont.po.Article;
+import com.zhf.webfont.po.ArticleClickRelation;
+import com.zhf.webfont.service.ArticleClickRelationService;
 import com.zhf.webfont.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +29,8 @@ public class ArticleController {
 
     @Resource
     private ArticleService articleService;
+    @Resource
+    private ArticleClickRelationService articleClickRelationService;
 
     @ApiOperation("插入文章，需要登陆")
     @PostMapping("insertArticle")
@@ -95,6 +99,13 @@ public class ArticleController {
     public CommonResult isCanUpdateArticle(String id){
         ArticleInsertParam articleInfo = articleService.isCanUpdateArticle(id);
         return CommonResult.success(articleInfo);
+    }
+
+    @ApiOperation("获得点赞记录")
+    @GetMapping("getArticleLike")
+    public CommonResult getArticleLike(String articleId){
+        ArticleClickRelation articleClickRelation = articleClickRelationService.getArticleLike(articleId);
+        return CommonResult.success(articleClickRelation);
     }
 
 }

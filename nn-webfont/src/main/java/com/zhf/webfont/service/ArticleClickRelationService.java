@@ -17,4 +17,10 @@ public interface ArticleClickRelationService extends IService<ArticleClickRelati
      */
     ArticleClickRelation getCurUserClick(String articleId);
 
+    /**
+     * 获得文章点赞记录
+     * @param articleId
+     * @return
+     */
+    ArticleClickRelation getArticleLike(String articleId);
 }
