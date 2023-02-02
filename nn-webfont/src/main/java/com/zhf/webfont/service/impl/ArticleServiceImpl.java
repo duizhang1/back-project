@@ -167,11 +167,18 @@ public class ArticleServiceImpl implements ArticleService {
         checkCanLikeOrStoreArticle(articleId);
         User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
         ArticleClickRelation articleClickRelation = articleClickRelationService.getCurUserClick(articleId);
+        Article article = articleMapper.selectById(articleId);
+        article.setLikeCount(article.getLikeCount()+1);
+        article.setUpdateTime(new Date());
 
         if (articleClickRelation != null){
             articleClickRelation.setUpdateTime(new Date());
             articleClickRelation.setState(LikeStateEnum.LIKE.getValue());
-            articleClickRelationService.updateById(articleClickRelation);
+            TransactionUtil.transaction(()->{
+                articleClickRelationService.updateById(articleClickRelation);
+                int i = articleMapper.updateById(article);
+                Asserts.failIsTrue(i < 1,"点赞失败");
+            });
         }else{
             ArticleClickRelation clickRelation = new ArticleClickRelation();
             clickRelation.setArticleId(articleId);
@@ -179,7 +186,11 @@ public class ArticleServiceImpl implements ArticleService {
             clickRelation.setCreateTime(new Date());
             clickRelation.setUpdateTime(new Date());
             clickRelation.setState(LikeStateEnum.LIKE.getValue());
-            articleClickRelationService.save(clickRelation);
+            TransactionUtil.transaction(()->{
+                articleClickRelationService.save(clickRelation);
+                int i = articleMapper.updateById(article);
+                Asserts.failIsTrue(i < 1,"点赞失败");
+            });
         }
 
         // todo 是否需要点赞信息加入redis
@@ -195,10 +206,18 @@ public class ArticleServiceImpl implements ArticleService {
         User currentUser = jwtTokenUtil.getCurrentUserFromHeader();
         ArticleClickRelation articleClickRelation = articleClickRelationService.getCurUserClick(articleId);
 
+        Article article = articleMapper.selectById(articleId);
+        article.setLikeCount(article.getLikeCount()-1);
+        article.setUpdateTime(new Date());
+
         if (articleClickRelation != null){
             articleClickRelation.setUpdateTime(new Date());
             articleClickRelation.setState(LikeStateEnum.DISLIKE.getValue());
-            articleClickRelationService.updateById(articleClickRelation);
+            TransactionUtil.transaction(()->{
+                articleClickRelationService.updateById(articleClickRelation);
+                int i = articleMapper.updateById(article);
+                Asserts.failIsTrue(i < 1,"点赞失败");
+            });
         }
 
         // todo 向redis中取消点赞记录

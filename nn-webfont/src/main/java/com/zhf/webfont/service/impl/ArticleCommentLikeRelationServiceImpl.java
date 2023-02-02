@@ -2,6 +2,7 @@ package com.zhf.webfont.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhf.common.enumType.LikeStateEnum;
 import com.zhf.common.exception.Asserts;
 import com.zhf.common.util.TransactionUtil;
 import com.zhf.webfont.mapper.ArticleCommentMapper;
@@ -39,9 +40,9 @@ public class ArticleCommentLikeRelationServiceImpl extends ServiceImpl<ArticleCo
         articleComment.setLikeNumber(articleComment.getLikeNumber()+1);
         articleComment.setUpdateTime(new Date());
         User user = jwtTokenUtil.getCurrentUserFromHeader();
-        if (commentLikeRelation == null){
+        if (commentLikeRelation == null ){
             ArticleCommentLikeRelation likeRelation = new ArticleCommentLikeRelation();
-            likeRelation.setState(1);
+            likeRelation.setState(LikeStateEnum.LIKE.getValue());
             likeRelation.setCreateTime(new Date());
             likeRelation.setUpdateTime(new Date());
             likeRelation.setCommentId(commentId);
@@ -52,7 +53,7 @@ public class ArticleCommentLikeRelationServiceImpl extends ServiceImpl<ArticleCo
                 int i = articleCommentMapper.updateById(articleComment);
                 Asserts.failIsTrue(i < 1,"点赞失败");
             });
-        }else{
+        }else if (LikeStateEnum.DISLIKE.getValue().equals(commentLikeRelation.getState())){
             commentLikeRelation.setState(1);
             commentLikeRelation.setUpdateTime(new Date());
             TransactionUtil.transaction(()->{
@@ -71,8 +72,8 @@ public class ArticleCommentLikeRelationServiceImpl extends ServiceImpl<ArticleCo
         ArticleComment articleComment = articleCommentMapper.selectById(commentId);
         articleComment.setLikeNumber(articleComment.getLikeNumber()-1);
         articleComment.setUpdateTime(new Date());
-        if (commentLikeRelation != null){
-            commentLikeRelation.setState(0);
+        if (commentLikeRelation != null && LikeStateEnum.LIKE.getValue().equals(commentLikeRelation.getState())){
+            commentLikeRelation.setState(LikeStateEnum.DISLIKE.getValue());
             commentLikeRelation.setUpdateTime(new Date());
             TransactionUtil.transaction(()->{
                 int insert =  articleCommentLikeRelationMapper.updateById(commentLikeRelation);

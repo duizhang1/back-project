@@ -18,4 +18,6 @@ public class ArticleCommentSingleParam extends ArticleComment {
 
     private String avatarHref;
 
+    private Integer likeState;
+
 }

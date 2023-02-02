@@ -22,4 +22,5 @@ public class ArticleCommentListParam extends ArticleComment {
 
     private String avatarHref;
 
+    private Integer likeState;
 }

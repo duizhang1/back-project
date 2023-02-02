@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhf.webfont.mapper.UserSubscribeMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhf.webfont.po.UserSubscribe">
+            <id property="uuid" column="uuid" jdbcType="VARCHAR"/>
+            <result property="beSubscribedId" column="be_subscribed_id" jdbcType="VARCHAR"/>
+            <result property="subscribedId" column="subscribed_id" jdbcType="VARCHAR"/>
+            <result property="isDel" column="is_del" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        uuid,be_subscribed_id,subscribed_id,
+        is_del,create_time,update_time
+    </sql>
+</mapper>

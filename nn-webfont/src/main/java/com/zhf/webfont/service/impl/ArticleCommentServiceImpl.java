@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhf.common.enumType.LikeStateEnum;
 import com.zhf.common.exception.Asserts;
 import com.zhf.common.util.TransactionUtil;
 import com.zhf.webfont.bo.ArticleCommentListParam;
@@ -12,7 +13,9 @@ import com.zhf.webfont.mapper.ArticleMapper;
 import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.Article;
 import com.zhf.webfont.po.ArticleComment;
+import com.zhf.webfont.po.ArticleCommentLikeRelation;
 import com.zhf.webfont.po.User;
+import com.zhf.webfont.service.ArticleCommentLikeRelationService;
 import com.zhf.webfont.service.ArticleCommentService;
 import com.zhf.webfont.mapper.ArticleCommentMapper;
 import com.zhf.webfont.util.JwtTokenUtil;
@@ -40,6 +43,8 @@ public class ArticleCommentServiceImpl extends ServiceImpl<ArticleCommentMapper,
     private UserMapper userMapper;
     @Resource
     private JwtTokenUtil jwtTokenUtil;
+    @Resource
+    private ArticleCommentLikeRelationService articleCommentLikeRelationService;
 
     @Override
     public void createArticleComment(ArticleComment articleComment) {
@@ -66,6 +71,10 @@ public class ArticleCommentServiceImpl extends ServiceImpl<ArticleCommentMapper,
 
             // 获取子评论
             List<ArticleCommentSingleParam> articleCommentSingleParams = articleCommentMapper.getChildCommentList(articleComment.getUuid(), 0, childSize);
+            for (ArticleCommentSingleParam articleCommentSingleParam : articleCommentSingleParams) {
+                ArticleCommentLikeRelation articleCommentLikeRelation = articleCommentLikeRelationService.getLikeArticleComment(articleCommentSingleParam.getUuid());
+                articleCommentSingleParam.setLikeState(articleCommentLikeRelation != null ? articleCommentLikeRelation.getState() : LikeStateEnum.DISLIKE.getValue());
+            }
             articleCommentListParam.setChildCommentList(articleCommentSingleParams);
 
             // 获取评论数
@@ -77,6 +86,9 @@ public class ArticleCommentServiceImpl extends ServiceImpl<ArticleCommentMapper,
             articleCommentListParam.setAvatarHref(user.getAvatar());
             articleCommentListParam.setUserName(user.getUsername());
 
+            ArticleCommentLikeRelation articleCommentLikeRelation = articleCommentLikeRelationService.getLikeArticleComment(articleComment.getUuid());
+            articleCommentListParam.setLikeState(articleCommentLikeRelation != null ? articleCommentLikeRelation.getState() : LikeStateEnum.DISLIKE.getValue());
+
             data.add(articleCommentListParam);
         }
         return data;
@@ -84,7 +96,12 @@ public class ArticleCommentServiceImpl extends ServiceImpl<ArticleCommentMapper,
 
     @Override
     public List<ArticleCommentSingleParam> loadMoreReply(String articleCommentId, Integer childSize) {
-        return articleCommentMapper.getChildCommentList(articleCommentId, childSize, 9999);
+        List<ArticleCommentSingleParam> childCommentList = articleCommentMapper.getChildCommentList(articleCommentId, childSize, 9999);
+        for (ArticleCommentSingleParam articleCommentSingleParam : childCommentList) {
+            ArticleCommentLikeRelation articleCommentLikeRelation = articleCommentLikeRelationService.getLikeArticleComment(articleCommentSingleParam.getUuid());
+            articleCommentSingleParam.setLikeState(articleCommentLikeRelation != null ? articleCommentLikeRelation.getState() : LikeStateEnum.DISLIKE.getValue());
+        }
+        return childCommentList;
     }
 
     @Override

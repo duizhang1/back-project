@@ -5,8 +5,10 @@ import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.bo.UserRegisterParam;
 import com.zhf.webfont.config.NeedLogin;
 import com.zhf.webfont.po.User;
+import com.zhf.webfont.po.UserSubscribe;
 import com.zhf.webfont.service.MailService;
 import com.zhf.webfont.service.UserService;
+import com.zhf.webfont.service.UserSubscribeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,8 @@ public class UserController {
     private String tokenHead;
     @Resource
     private UserService userService;
+    @Resource
+    private UserSubscribeService userSubscribeService;
 
     @ApiOperation("登陆接口返回token")
     @PostMapping("login")
@@ -54,6 +58,29 @@ public class UserController {
     public CommonResult getCurrentUser(){
         User user = userService.getCurrentUser();
         return CommonResult.success(user);
+    }
+
+    @ApiOperation("关注用户")
+    @GetMapping("subscribeUser")
+    @NeedLogin
+    public CommonResult subscribeUser(String userId){
+        userSubscribeService.subscribeUser(userId);
+        return CommonResult.successWithMsg("关注成功");
+    }
+
+    @ApiOperation("取关用户")
+    @GetMapping("unSubscribeUser")
+    @NeedLogin
+    public CommonResult unSubscribeUser(String userId){
+        userSubscribeService.unSubscribeUser(userId);
+        return CommonResult.successWithMsg("取关成功");
+    }
+
+    @ApiOperation("获得用户关注信息")
+    @GetMapping("getNowUserSubscribe")
+    public CommonResult getNowUserSubscribe(String userId){
+        UserSubscribe userSubscribe = userSubscribeService.getNowUserSubscribe(userId);
+        return CommonResult.success(userSubscribe);
     }
 
 }
