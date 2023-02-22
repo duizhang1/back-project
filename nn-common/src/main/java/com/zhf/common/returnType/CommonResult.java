@@ -89,6 +89,17 @@ public class CommonResult<T> {
     }
 
     /**
+     * 失败返回消息+数据
+     * @param message
+     * @param t
+     * @param <T>
+     * @return
+     */
+    public static <T> CommonResult<T> failed(String message,T t) {
+        return new CommonResult<T>(ResultCode.FAILED.getCode(), message, t);
+    }
+
+    /**
      * 未登录返回结果
      */
     public static <T> CommonResult<T> unauthorized(T data) {

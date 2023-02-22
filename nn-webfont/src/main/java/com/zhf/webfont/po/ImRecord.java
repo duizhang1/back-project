@@ -10,34 +10,39 @@ import lombok.Data;
 
 /**
  * 
- * @TableName wf_article_store_list_relation
+ * @TableName wf_im_record
  */
-@TableName(value ="wf_article_store_list_relation")
+@TableName(value ="wf_im_record")
 @Data
-public class ArticleStoreListRelation implements Serializable {
+public class ImRecord implements Serializable {
     /**
-     * uuid主键
+     * 
      */
     @TableId(type = IdType.ASSIGN_UUID)
     private String uuid;
 
     /**
-     * 收藏夹ID
+     * 发送者ID
      */
-    private String storeListId;
+    private String userId;
 
     /**
-     * 文章ID
+     * 被发送者ID
      */
-    private String articleId;
+    private String toUserId;
 
     /**
-     * 创建时间
+     * 发送内容
+     */
+    private String content;
+
+    /**
+     * 
      */
     private Date createTime;
 
     /**
-     * 更新时间
+     * 
      */
     private Date updateTime;
 

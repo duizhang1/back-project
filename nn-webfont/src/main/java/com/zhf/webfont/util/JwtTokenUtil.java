@@ -50,7 +50,17 @@ public class JwtTokenUtil {
     @Resource
     private ThreadLocalUtil threadLocalUtil;
 
+    public String getTokenFromAuthHeader(String authHeader){
+        if (StrUtil.isEmpty(authHeader) || authHeader.length() <= tokenHead.length()){
+            return null;
+        }
+        return authHeader.substring(tokenHead.length());
+    }
 
+    /**
+     * 从头部获得的authstring将token从其中截断出来
+     * @return
+     */
     public String getTokenFromHeader(){
         HttpServletRequest currentRequest = RequestUtil.getCurrentRequest();
         String authHeader = currentRequest.getHeader(tokenHeader);
