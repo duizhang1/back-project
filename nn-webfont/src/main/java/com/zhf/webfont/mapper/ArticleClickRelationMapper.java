@@ -1,7 +1,9 @@
 package com.zhf.webfont.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhf.webfont.po.ArticleClickRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 10276
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface ArticleClickRelationMapper extends BaseMapper<ArticleClickRelation> {
 
+    IPage<ArticleClickRelation> selectLikeNotification(IPage<ArticleClickRelation> iPage,@Param("userId") String userId);
 }
 
 

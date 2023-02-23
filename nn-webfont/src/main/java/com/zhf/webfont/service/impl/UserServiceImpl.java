@@ -9,9 +9,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zhf.common.exception.Asserts;
 import com.zhf.common.returnType.CommonResult;
 import com.zhf.common.service.RedisService;
+import com.zhf.common.util.TransactionUtil;
 import com.zhf.webfont.bo.UserLoginParam;
 import com.zhf.webfont.bo.UserRegisterParam;
+import com.zhf.webfont.mapper.NotificationUnreadMapper;
 import com.zhf.webfont.mapper.UserMapper;
+import com.zhf.webfont.po.NotificationUnread;
 import com.zhf.webfont.po.User;
 import com.zhf.webfont.service.MailCacheService;
 import com.zhf.webfont.service.UserService;
@@ -38,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Resource
     private MailCacheService mailCacheService;
+    @Resource
+    private NotificationUnreadMapper notificationUnreadMapper;
 
     @Override
     public String login(UserLoginParam userLoginParam) {
@@ -59,8 +64,22 @@ public class UserServiceImpl implements UserService {
         user.setUpdateTime(new Date());
         user.setAvatar("https://p3-passport.byteimg.com/img/mosaic-legacy/3795/3033762272~180x180.awebp");
         user.setPassword(passwordEncoder.encode(userRegisterParam.getPassword()));
-        int count = userMapper.insert(user);
-        Asserts.failIsTrue(count <= 0,"出错了，注册失败");
+
+        // 创建消息记录的初始记录
+        NotificationUnread notificationUnread = new NotificationUnread();
+        notificationUnread.setLikeCount(0);
+        notificationUnread.setCommentCount(0);
+        notificationUnread.setFocusCount(0);
+        notificationUnread.setCreateTime(new Date());
+        notificationUnread.setUpdateTime(new Date());
+
+        TransactionUtil.transaction(()->{
+            int count = userMapper.insert(user);
+            Asserts.failIsTrue(count <= 0,"出错了，注册失败");
+            notificationUnread.setUserId(user.getUuid());
+            int insert = notificationUnreadMapper.insert(notificationUnread);
+            Asserts.failIsTrue(insert <= 0,"出错了，注册失败");
+        });
     }
 
     @Override

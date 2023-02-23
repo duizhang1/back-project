@@ -17,4 +17,12 @@
         uuid,user_id,article_id,
         state,create_time,update_time
     </sql>
+    <select id="selectLikeNotification" resultType="com.zhf.webfont.po.ArticleClickRelation">
+        select
+            acr.*
+        from wf_article_click_relation acr
+        where acr.article_id in (select a.uuid from wf_article a where creator_id = #{userId})
+            and acr.state = 1
+        order by acr.update_time desc
+    </select>
 </mapper>

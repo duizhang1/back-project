@@ -1,7 +1,12 @@
 package com.zhf.webfont.service;
 
+import com.zhf.common.bo.BasePageParam;
+import com.zhf.webfont.bo.ArticleLikeNotificationParam;
 import com.zhf.webfont.po.ArticleClickRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author 10276
@@ -23,4 +28,11 @@ public interface ArticleClickRelationService extends IService<ArticleClickRelati
      * @return
      */
     ArticleClickRelation getArticleLike(String articleId);
+
+    /**
+     * 获得点赞消息列表
+     * @param pageParam
+     * @return
+     */
+    Map<String,Object> getArticleLikeNotifications(BasePageParam pageParam);
 }
