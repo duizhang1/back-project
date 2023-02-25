@@ -1,11 +1,13 @@
 package com.zhf.webfont.service;
 
+import com.zhf.common.bo.BasePageParam;
 import com.zhf.webfont.bo.ArticleCommentListParam;
 import com.zhf.webfont.bo.ArticleCommentSingleParam;
 import com.zhf.webfont.po.ArticleComment;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author 10276
@@ -41,4 +43,11 @@ public interface ArticleCommentService extends IService<ArticleComment> {
      * @param commentId
      */
     void deleteArticleComment(String commentId);
+
+    /**
+     * 获得评论消息
+     * @param pageParam
+     * @return
+     */
+    Map<String, Object> getCommentNotification(BasePageParam pageParam);
 }

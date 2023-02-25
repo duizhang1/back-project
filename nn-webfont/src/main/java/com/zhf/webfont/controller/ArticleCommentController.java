@@ -1,5 +1,6 @@
 package com.zhf.webfont.controller;
 
+import com.zhf.common.bo.BasePageParam;
 import com.zhf.common.returnType.CommonResult;
 import com.zhf.webfont.bo.ArticleCommentListParam;
 import com.zhf.webfont.bo.ArticleCommentSingleParam;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 10276
@@ -80,5 +82,13 @@ public class ArticleCommentController {
     public CommonResult getLikeArticleComment(String commentId){
         ArticleCommentLikeRelation articleCommentLikeRelation = articleCommentLikeRelationService.getLikeArticleComment(commentId);
         return CommonResult.success(articleCommentLikeRelation);
+    }
+
+    @GetMapping("getCommentNotification")
+    @ApiOperation("获得别人评论消息")
+    @NeedLogin
+    public CommonResult getCommentNotification(BasePageParam pageParam){
+        Map<String,Object> map = articleCommentService.getCommentNotification(pageParam);
+        return CommonResult.success(map);
     }
 }

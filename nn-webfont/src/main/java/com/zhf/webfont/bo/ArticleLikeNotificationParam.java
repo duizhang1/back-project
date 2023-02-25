@@ -15,7 +15,13 @@ public class ArticleLikeNotificationParam{
 
     private ArticleClickRelation relation;
 
-    private User user;
+    private String userId;
 
-    private Article article;
+    private String username;
+
+    private String avatar;
+
+    private String articleId;
+
+    private String title;
 }

@@ -43,4 +43,43 @@
         order by wac.create_time
         limit #{startIndex},#{childSize}
     </select>
+    <select id="selectCommentNotification" resultType="com.zhf.webfont.po.ArticleComment">
+        with t as (
+            select <include refid="Base_Column_List"/>
+            from wf_article_comment ac
+            where (ac.parent_comment_id is null or ac.parent_comment_id = '')
+              and (ac.reply_comment_id is null or ac.reply_comment_id = '')
+              and ac.user_id != #{userId}
+              and ac.is_del = 0
+              and ac.article_id in (select a.uuid from wf_article a where a.creator_id = #{userId})
+        ),
+        t1 as (
+            select <include refid="Base_Column_List"/>
+            from wf_article_comment ac
+            where (ac.reply_comment_id is null or ac.reply_comment_id = '')
+              and ac.user_id != #{userId}
+              and ac.is_del = 0
+              and ac.parent_comment_id in (select uuid from wf_article_comment ac1
+                        where ac1.user_id = #{userId}
+                          and (ac1.parent_comment_id is null or ac1.parent_comment_id = '')
+                          and (ac1.reply_comment_id is null or ac1.reply_comment_id = ''))
+        ),
+        t2 as (
+            select <include refid="Base_Column_List"/>
+            from wf_article_comment ac
+            where ac.user_id != #{userId}
+              and ac.is_del = 0
+              and ac.reply_comment_id in (select uuid from wf_article_comment ac1
+                                           where ac1.user_id = #{userId}
+                                             and (ac1.parent_comment_id is not null and ac1.parent_comment_id != ''))
+        ),
+        allt as (
+            select <include refid="Base_Column_List"/> from t
+            union
+            select <include refid="Base_Column_List"/> from t1
+            union
+            select <include refid="Base_Column_List"/> from t2
+        )
+        select * from allt order by allt.update_time desc
+    </select>
 </mapper>

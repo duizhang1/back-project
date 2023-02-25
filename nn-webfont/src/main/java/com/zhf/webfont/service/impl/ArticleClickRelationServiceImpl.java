@@ -71,9 +71,12 @@ public class ArticleClickRelationServiceImpl extends ServiceImpl<ArticleClickRel
         for (ArticleClickRelation record : page.getRecords()) {
             ArticleLikeNotificationParam param = new ArticleLikeNotificationParam();
             Article article = articleMapper.selectById(record.getArticleId());
-            param.setArticle(article);
+            param.setArticleId(article.getUuid());
+            param.setTitle(article.getTitle());
             User user = userMapper.selectById(record.getUserId());
-            param.setUser(user);
+            param.setUserId(user.getUuid());
+            param.setAvatar(user.getAvatar());
+            param.setUsername(user.getUsername());
             param.setRelation(record);
             result.add(param);
         }
