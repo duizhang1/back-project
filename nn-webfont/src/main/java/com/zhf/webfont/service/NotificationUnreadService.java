@@ -20,4 +20,15 @@ public interface NotificationUnreadService extends IService<NotificationUnread> 
      * @param creatorId
      */
     void addLikeUnreadCount(String creatorId);
+
+    /**
+     * 清空当前登陆用户未读的关注消息
+     */
+    void clearFocusUnreadCount();
+
+    /**
+     * 添加一个未读消息
+     * @param userId
+     */
+    void addFocusUnreadCount(String userId);
 }

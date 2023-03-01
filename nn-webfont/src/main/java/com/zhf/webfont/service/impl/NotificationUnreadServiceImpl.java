@@ -47,6 +47,26 @@ public class NotificationUnreadServiceImpl extends ServiceImpl<NotificationUnrea
         });
     }
 
+    @Override
+    public void clearFocusUnreadCount() {
+        User curUser = jwtTokenUtil.getCurrentUserFromHeader();
+        NotificationUnread notificationUnread = getNotificationUnreadByUserId(curUser.getUuid());
+        if (notificationUnread != null && !notificationUnread.getFocusCount().equals(0)){
+            notificationUnread.setFocusCount(0);
+            notificationUnread.setUpdateTime(new Date());
+            notificationUnreadMapper.updateById(notificationUnread);
+        }
+    }
+
+    @Override
+    public void addFocusUnreadCount(String userId) {
+        TransactionUtil.transaction(()->{
+            NotificationUnread notificationUnread = getNotificationUnreadByUserId(userId);
+            notificationUnread.setFocusCount(notificationUnread.getFocusCount()+1);
+            notificationUnreadMapper.updateById(notificationUnread);
+        });
+    }
+
     private NotificationUnread getNotificationUnreadByUserId(String userId) {
         QueryWrapper<NotificationUnread> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id",userId);

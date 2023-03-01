@@ -1,18 +1,24 @@
 package com.zhf.webfont.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhf.common.bo.BasePageParam;
 import com.zhf.common.enumType.SubscribeStateEnum;
 import com.zhf.common.exception.Asserts;
+import com.zhf.webfont.bo.UserSubscribeNotificationParam;
+import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.User;
 import com.zhf.webfont.po.UserSubscribe;
+import com.zhf.webfont.service.NotificationUnreadService;
 import com.zhf.webfont.service.UserSubscribeService;
 import com.zhf.webfont.mapper.UserSubscribeMapper;
 import com.zhf.webfont.util.JwtTokenUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
+import java.util.*;
 
 /**
 * @author 10276
@@ -27,6 +33,10 @@ public class UserSubscribeServiceImpl extends ServiceImpl<UserSubscribeMapper, U
     private JwtTokenUtil jwtTokenUtil;
     @Resource
     private UserSubscribeMapper userSubscribeMapper;
+    @Resource
+    private UserMapper userMapper;
+    @Resource
+    private NotificationUnreadService notificationUnreadService;
 
     @Override
     public void subscribeUser(String userId) {
@@ -48,6 +58,8 @@ public class UserSubscribeServiceImpl extends ServiceImpl<UserSubscribeMapper, U
             userSubscribe.setUpdateTime(new Date());
             userSubscribeMapper.updateById(userSubscribe);
         }
+
+        notificationUnreadService.addFocusUnreadCount(userId);
     }
 
     @Override
@@ -71,6 +83,44 @@ public class UserSubscribeServiceImpl extends ServiceImpl<UserSubscribeMapper, U
         }else{
             return getUserSubscribe(userId);
         }
+    }
+
+    @Override
+    public Map<String, Object> getUserSubscribeNotification(BasePageParam pageParam) {
+        User curUser = jwtTokenUtil.getCurrentUserFromHeader();
+
+        IPage<UserSubscribe> iPage = new Page<>(pageParam.getCurrent(), pageParam.getSize());
+        IPage<UserSubscribe> page = userSubscribeMapper.selectFocusPageByCurrentUser(iPage,curUser.getUuid());
+        List<UserSubscribeNotificationParam> result = new ArrayList<>();
+        for (UserSubscribe record : page.getRecords()) {
+            UserSubscribeNotificationParam param = new UserSubscribeNotificationParam();
+            User user = userMapper.selectById(record.getSubscribedId());
+            param.setUserId(user.getUuid());
+            param.setAvatar(user.getAvatar());
+            param.setUsername(user.getUsername());
+            param.setUserSubscribe(record);
+
+            QueryWrapper<UserSubscribe> wrapper = new QueryWrapper<>();
+            wrapper.eq("be_subscribed_id",user.getUuid())
+                    .eq("subscribed_id",curUser.getUuid());
+            UserSubscribe userSubscribe = userSubscribeMapper.selectOne(wrapper);
+            if (userSubscribe != null && userSubscribe.getIsDel().equals(SubscribeStateEnum.SUBSCRIBE.getValue())){
+                param.setIsFocus(true);
+            }else{
+                param.setIsFocus(false);
+            }
+            result.add(param);
+        }
+        Map<String, Object> map = new HashMap<>(4);
+        map.put("total",page.getTotal());
+        map.put("current",page.getCurrent());
+        map.put("size",page.getSize());
+        map.put("data",result);
+
+        // 清空未读的关注消息数
+        notificationUnreadService.clearFocusUnreadCount();
+
+        return map;
     }
 
     private UserSubscribe getUserSubscribe(String userId) {

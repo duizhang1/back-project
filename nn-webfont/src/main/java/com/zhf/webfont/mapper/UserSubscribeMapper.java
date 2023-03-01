@@ -1,7 +1,9 @@
 package com.zhf.webfont.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhf.webfont.po.UserSubscribe;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 10276
@@ -11,6 +13,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface UserSubscribeMapper extends BaseMapper<UserSubscribe> {
 
+    /**
+     * 获得分页的消息通知的关注数据
+     * @param iPage
+     * @param userId
+     * @return
+     */
+    IPage<UserSubscribe> selectFocusPageByCurrentUser(IPage<UserSubscribe> iPage,@Param("userId") String userId);
 }
 
 

@@ -1,7 +1,10 @@
 package com.zhf.webfont.service;
 
+import com.zhf.common.bo.BasePageParam;
 import com.zhf.webfont.po.UserSubscribe;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.Map;
 
 /**
 * @author 10276
@@ -28,4 +31,11 @@ public interface UserSubscribeService extends IService<UserSubscribe> {
      * @return
      */
     UserSubscribe getNowUserSubscribe(String userId);
+
+    /**
+     * 获得用户关注消息通知
+     * @param pageParam
+     * @return
+     */
+    Map<String, Object> getUserSubscribeNotification(BasePageParam pageParam);
 }

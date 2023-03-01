@@ -17,4 +17,10 @@
         uuid,be_subscribed_id,subscribed_id,
         is_del,create_time,update_time
     </sql>
+    <select id="selectFocusPageByCurrentUser" resultType="com.zhf.webfont.po.UserSubscribe">
+        select <include refid="Base_Column_List"/>
+        from wf_user_subscribe us
+        where be_subscribed_id = #{userId} and is_del = 0
+        order by update_time
+    </select>
 </mapper>
