@@ -20,7 +20,7 @@
     <select id="selectFocusPageByCurrentUser" resultType="com.zhf.webfont.po.UserSubscribe">
         select <include refid="Base_Column_List"/>
         from wf_user_subscribe us
-        where be_subscribed_id = #{userId} and is_del = 0
+        where be_subscribed_id = #{userId} and is_del = #{state}
         order by update_time
     </select>
 </mapper>

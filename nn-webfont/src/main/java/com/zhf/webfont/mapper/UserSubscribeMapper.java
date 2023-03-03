@@ -19,7 +19,7 @@ public interface UserSubscribeMapper extends BaseMapper<UserSubscribe> {
      * @param userId
      * @return
      */
-    IPage<UserSubscribe> selectFocusPageByCurrentUser(IPage<UserSubscribe> iPage,@Param("userId") String userId);
+    IPage<UserSubscribe> selectFocusPageByCurrentUser(IPage<UserSubscribe> iPage,@Param("userId") String userId,@Param("state") Integer state);
 }
 
 

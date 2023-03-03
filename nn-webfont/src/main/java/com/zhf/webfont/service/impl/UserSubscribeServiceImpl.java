@@ -90,7 +90,7 @@ public class UserSubscribeServiceImpl extends ServiceImpl<UserSubscribeMapper, U
         User curUser = jwtTokenUtil.getCurrentUserFromHeader();
 
         IPage<UserSubscribe> iPage = new Page<>(pageParam.getCurrent(), pageParam.getSize());
-        IPage<UserSubscribe> page = userSubscribeMapper.selectFocusPageByCurrentUser(iPage,curUser.getUuid());
+        IPage<UserSubscribe> page = userSubscribeMapper.selectFocusPageByCurrentUser(iPage,curUser.getUuid(),SubscribeStateEnum.SUBSCRIBE.getValue());
         List<UserSubscribeNotificationParam> result = new ArrayList<>();
         for (UserSubscribe record : page.getRecords()) {
             UserSubscribeNotificationParam param = new UserSubscribeNotificationParam();
