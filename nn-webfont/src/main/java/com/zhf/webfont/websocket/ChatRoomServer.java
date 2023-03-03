@@ -67,7 +67,7 @@ public class ChatRoomServer {
         // 将webSocket以及session存入
         webSocketSet.putIfAbsent(user.getUuid(),new ConcurrentHashMap<>(5));
         Map<ChatRoomServer, Object> userMap = webSocketSet.get(user.getUuid());
-        userMap.put(this,null);
+        userMap.put(this,1);
 
         broadcastToCurUser(CommonResult.successWithMsg("success"));
     }

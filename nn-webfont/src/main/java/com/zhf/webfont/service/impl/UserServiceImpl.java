@@ -17,6 +17,7 @@ import com.zhf.webfont.mapper.UserMapper;
 import com.zhf.webfont.po.NotificationUnread;
 import com.zhf.webfont.po.User;
 import com.zhf.webfont.service.MailCacheService;
+import com.zhf.webfont.service.NotificationUnreadService;
 import com.zhf.webfont.service.UserService;
 import com.zhf.webfont.util.JwtTokenUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,8 @@ public class UserServiceImpl implements UserService {
     private MailCacheService mailCacheService;
     @Resource
     private NotificationUnreadMapper notificationUnreadMapper;
+    @Resource
+    private NotificationUnreadService notificationUnreadService;
 
     @Override
     public String login(UserLoginParam userLoginParam) {
@@ -76,9 +79,8 @@ public class UserServiceImpl implements UserService {
         TransactionUtil.transaction(()->{
             int count = userMapper.insert(user);
             Asserts.failIsTrue(count <= 0,"出错了，注册失败");
-            notificationUnread.setUserId(user.getUuid());
-            int insert = notificationUnreadMapper.insert(notificationUnread);
-            Asserts.failIsTrue(insert <= 0,"出错了，注册失败");
+
+            notificationUnreadService.InsertNotificationUnreadRecord(user.getUuid());
         });
     }
 

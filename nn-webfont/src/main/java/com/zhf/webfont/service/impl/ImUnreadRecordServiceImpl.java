@@ -3,12 +3,16 @@ package com.zhf.webfont.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhf.webfont.po.ImUnreadRecord;
+import com.zhf.webfont.po.User;
 import com.zhf.webfont.service.ImUnreadRecordService;
 import com.zhf.webfont.mapper.ImUnreadRecordMapper;
+import com.zhf.webfont.util.JwtTokenUtil;
+import io.swagger.models.auth.In;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 10276
@@ -21,6 +25,8 @@ public class ImUnreadRecordServiceImpl extends ServiceImpl<ImUnreadRecordMapper,
 
     @Resource
     private ImUnreadRecordMapper imUnreadRecordMapper;
+    @Resource
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public void incrUnreadCount(String userId, String toUserId) {
@@ -37,6 +43,19 @@ public class ImUnreadRecordServiceImpl extends ServiceImpl<ImUnreadRecordMapper,
             imUnreadRecord.setCount(imUnreadRecord.getCount()+1);
             imUnreadRecordMapper.updateById(imUnreadRecord);
         }
+    }
+
+    @Override
+    public Long getImUnreadCount() {
+        User curUser = jwtTokenUtil.getCurrentUserFromHeader();
+        QueryWrapper<ImUnreadRecord> wrapper = new QueryWrapper<>();
+        wrapper.eq("to_user_id",curUser.getUuid());
+        List<ImUnreadRecord> imUnreadRecords = imUnreadRecordMapper.selectList(wrapper);
+        Long count = 0L;
+        for (ImUnreadRecord imUnreadRecord : imUnreadRecords) {
+            count += imUnreadRecord.getCount();
+        }
+        return count;
     }
 
     private ImUnreadRecord getImUnreadRecordById(String userId, String toUserId) {

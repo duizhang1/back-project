@@ -16,4 +16,10 @@ public interface ImUnreadRecordService extends IService<ImUnreadRecord> {
      * @param toUserId
      */
     void incrUnreadCount(String uuid, String toUserId);
+
+    /**
+     * 获得当前登录用户聊天室未读消息
+     * @return
+     */
+    Long getImUnreadCount();
 }
